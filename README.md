@@ -12,5 +12,5 @@ This script allows you to download and save slices of images from BossDB as TIFF
   - `requests` (for making HTTP requests)
 
 ## Installation
-1. Clone this repository or download the script `bossdb_image_slicer.py`.
+1. Clone this repository or download the script `image_conversion_script.py`.
 2. Install the required Python packages:
