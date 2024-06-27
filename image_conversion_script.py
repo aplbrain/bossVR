@@ -1,10 +1,7 @@
-import numpy as np
 from intern import array
-import matplotlib.pyplot as plt
 import os
-import sys
 from PIL import Image
-from tqdm import tqdm
+import requests
 
 def get_indices(dim_name, coord_dims):
     while True:
@@ -44,12 +41,10 @@ def get_file_location():
 
 def save_slices_as_tiff(dataset, file_location, z_start, collection, experiment, channel):
     z_dim = dataset.shape[0]
-    start = z_start
     for i in range(z_dim):
-        start += 1
         slice_image = dataset[i, :, :]
         img = Image.fromarray(slice_image)
-        img.save(os.path.join(file_location, f'{collection.lower()}_{experiment.lower()}_{channel.lower()}_{z_start + i:03d}.tiff'))
+        img.save(os.path.join(file_location, f'{collection.lower()}_{experiment.lower()}_{channel.lower()}_{z_start + 1 + i:03d}.tiff'))
     print(str(z_dim) + " images have been saved to the specified directory.")
 
 def main():
@@ -58,25 +53,26 @@ def main():
     experiment = input("Please enter the experiment name: ")
     channel = input("Please enter the channel name: ")
 
-    # Get BossDB URL
-    url = "bossdb://" + collection + "/" + experiment + "/" + channel
-    print("BossDB URL: " + url)
-
     # Ask user for desired resolution
     while True:
         try:
             res = int(input("Please enter the desired resolution level: "))
-            break  # Exit the loop if conversion is successful
+            break 
         except ValueError:
             print("Invalid input. Please enter an integer value.")
 
-    #  Convert to full dataset with specified resolution   
-    bossdb_dataset = array(url, resolution=res)
+    try:
+        url = "bossdb://" + collection + "/" + experiment + "/" + channel
+        # Convert to full dataset with specified resolution   
+        bossdb_dataset = array(url, resolution=res)
 
-    # Extract dimensions
-    z_dim, y_dim, x_dim = bossdb_dataset.shape
-    coord_dims = {'X': x_dim, 'Y': y_dim, 'Z': z_dim}
-    print(f"This dataset is {x_dim} voxels in the X dimension, {y_dim} voxels in the Y dimension, and {z_dim} voxels in the Z dimension.")
+        # Extract dimensions
+        z_dim, y_dim, x_dim = bossdb_dataset.shape
+        coord_dims = {'X': x_dim, 'Y': y_dim, 'Z': z_dim}
+        print(f"This dataset is {x_dim} voxels in the X dimension, {y_dim} voxels in the Y dimension, and {z_dim} voxels in the Z dimension.")
+    except requests.exceptions.HTTPError as e:
+        print(f"Error: {e.response.json().get('message')}")
+        return
 
     # Get user input for each dimension
     x_start, x_stop = get_indices("X", coord_dims)
@@ -85,8 +81,10 @@ def main():
 
     print(f"Selected ranges - X: {x_start}:{x_stop}, Y: {y_start}:{y_stop}, Z: {z_start}:{z_stop}")
 
+    print("Downloading cutout data..")
     # View the data
     cutout = bossdb_dataset[z_start:z_stop, y_start:y_stop, x_start:x_stop]
+    print("Download complete. ")
 
     # Convert to TIFF and save in specified directory
     file_location = get_file_location()
