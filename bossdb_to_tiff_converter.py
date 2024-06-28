@@ -21,19 +21,19 @@ def get_indices(dim_name, coord_dims, indices, is_cloud=False):
     
     return start, stop
 
-def save_slices_as_tiff(dataset, url, file_location, z_start, is_cloud=False):
+def save_slices_as_tiff(dataset, path, file_location, z_start, is_cloud=False):
     if is_cloud:
         z_dim = dataset.shape[2]
         for i in range(z_dim):
             slice_image = dataset[:, :, i][:, :, 0]
             img = Image.fromarray(slice_image)
-            img.save(os.path.join(file_location, f'{url}_{z_start + 1 + i:03d}.tiff'))
+            img.save(os.path.join(file_location, f'{path}_{z_start + 1 + i:03d}.tiff'))
     else:
         z_dim = dataset.shape[0]
         for i in range(z_dim):
             slice_image = dataset[i, :, :]
             img = Image.fromarray(slice_image)
-            img.save(os.path.join(file_location, f'{url}_{z_start + 1 + i:03d}.tiff'))
+            img.save(os.path.join(file_location, f'{path}_{z_start + 1 + i:03d}.tiff'))
     
     print(f"{z_dim} images have been saved to the specified directory.")
 
@@ -70,7 +70,7 @@ def cloud_info(url, resolution, file_path):
         print(f"Error: {e.response.json().get('message')}")
         return
 
-def intern_convert(url, resolution, x, y, z, file_path):
+def intern_convert(url, path, resolution, x, y, z, file_path):
     try:
         bossdb_dataset = array(url, resolution=resolution)
         z_dim, y_dim, x_dim = bossdb_dataset.shape
@@ -102,14 +102,14 @@ def intern_convert(url, resolution, x, y, z, file_path):
             os.makedirs(file_path)
             print(f"Directory {file_path} created.")
 
-        save_slices_as_tiff(cutout, url, file_path, z_start)
+        save_slices_as_tiff(cutout, path, file_path, z_start)
 
     except requests.exceptions.HTTPError as e:
         print(f"Error: {e.response.json().get('message')}")
     except ValueError as e:
         print(f"Error: {e}")
 
-def cloud_convert(url, resolution, x, y, z, file_path):
+def cloud_convert(url, path, resolution, x, y, z, file_path):
     try:
         vol = CloudVolume(url, mip=resolution, use_https=True)
         bounds = vol.bounds
@@ -141,7 +141,7 @@ def cloud_convert(url, resolution, x, y, z, file_path):
             os.makedirs(file_path)
             print(f"Directory {file_path} created.")
 
-        save_slices_as_tiff(cutout, url, file_path, z_start, is_cloud=True)
+        save_slices_as_tiff(cutout, path, file_path, z_start, is_cloud=True)
 
     except requests.exceptions.HTTPError as e:
         print(f"Error: {e.response.json().get('message')}")
@@ -155,7 +155,7 @@ def parse_url(url):
 
 def main():
     parser = argparse.ArgumentParser(description="BossDB Image Conversion Script")
-    parser.add_argument("-t", "--type", required=True, choices=["intern", "cloud"], help="Type of implementation to use (intern or cloud)")
+    parser.add_argument("-m", "--mode", required=True, choices=["intern", "cloud"], help="Mode of implementation (intern or cloud)")
     parser.add_argument("-u", "--url", required=True, nargs='+', help="BossDB or CloudVolume path")    
     parser.add_argument("-r", "--resolution", type=int, default=0, help="Desired resolution level")
     parser.add_argument("-x", "--x_dimensions", help="Range for x in the format x_start:x_stop")
@@ -168,18 +168,18 @@ def main():
 
     try:
         parse_url(args.url)
-        url = f"bossdb://{args.url}" if args.type == "intern" else f"s3://bossdb-open-data/{args.url}"
+        url = f"bossdb://{args.url}" if args.mode == "intern" else f"s3://bossdb-open-data/{args.url}"
 
-        if args.type == "intern":
+        if args.mode == "intern":
             intern_info(url, args.file_path)
         else:
             cloud_info(url, args.resolution, args.file_path)
 
         if args.file_path is not None:
-            if args.type == "intern":
-                intern_convert(url, args.resolution, args.x_dimensions, args.y_dimensions, args.z_dimensions, args.file_path)
+            if args.mode == "intern":
+                intern_convert(url, args.url.replace("/", "_"), args.resolution, args.x_dimensions, args.y_dimensions, args.z_dimensions, args.file_path)
             else:
-                cloud_convert(url, args.resolution, args.x_dimensions, args.y_dimensions, args.z_dimensions, args.file_path)
+                cloud_convert(url, args.url.replace("/", "_"), args.resolution, args.x_dimensions, args.y_dimensions, args.z_dimensions, args.file_path)
     
     except ValueError as e:
         print(f"Error: {str(e)}")
