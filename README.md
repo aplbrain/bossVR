@@ -1,3 +1,5 @@
+Here's the updated README with the new instructions:
+
 # BossDB Image Conversion Script
 
 This script allows you to interact with datasets from BossDB and CloudVolume. You can retrieve information about the dataset or download images in TIFF format. The script supports two modes: `intern` and `cloud`, and provides a command-line interface using `argparse`.
@@ -6,10 +8,16 @@ This script allows you to interact with datasets from BossDB and CloudVolume. Yo
 
 - Python 3.x
 - `numpy` (version = 1.26.4)
-- `intern` (for accessing BossDB data, follow [installation instructions](https://github.com/jhuapl-boss/intern)
+- `intern` (for accessing BossDB data, follow [installation instructions](https://github.com/jhuapl-boss/intern))
 - `CloudVolume` (for reading and writing of NeuroGlancer datasets and access to more detailed dataset info, follow [installation instructions](https://github.com/seung-lab/cloud-volume?tab=readme-ov-file))
 - `PIL` (Python Imaging Library, for image processing)
 - `requests` (for making HTTP requests)
+
+All the requirements and packages can be installed using the `requirements.txt` file:
+
+```sh
+pip install -r requirements.txt
+```
 
 ## Usage
 
@@ -93,4 +101,12 @@ The `main` function uses `argparse` to parse command-line arguments and calls th
 
 To run the script, use the command-line examples provided above, specifying the appropriate arguments for your use case.
 
----
+### Running Tests
+
+To run tests using `pytest`, navigate to the `bossdb_code` directory and use the following command:
+
+```sh
+pytest
+```
+
+This will discover and run all the tests in the `tests` directory.
