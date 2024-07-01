@@ -1,5 +1,3 @@
-Here's the updated README with the new instructions:
-
 # BossDB Image Conversion Script
 
 This script allows you to interact with datasets from BossDB and CloudVolume. You can retrieve information about the dataset or download images in TIFF format. The script supports two modes: `intern` and `cloud`, and provides a command-line interface using `argparse`.
