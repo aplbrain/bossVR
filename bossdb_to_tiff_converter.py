@@ -18,8 +18,8 @@ def get_indices(dim_name, coord_dims, indices, is_cloud=False):
     
     if stop > dim_size or start >= stop:
         raise ValueError(f"Invalid {dim_name} indices: {start}:{stop}. Must be within range (0:{dim_size}) and start < stop")
-    
-    return start, stop
+    else:
+        return start, stop
 
 def save_slices_as_tiff(dataset, path, file_location, z_start, is_cloud=False):
     if is_cloud:
@@ -37,11 +37,11 @@ def save_slices_as_tiff(dataset, path, file_location, z_start, is_cloud=False):
     
     print(f"{z_dim} images have been saved to the specified directory.")
 
-def intern_info(url, file_path):
+def intern_info(url, resolution, file_path):
     try:
-        bossdb_dataset = array(url)
+        bossdb_dataset = array(url, resolution=resolution)
         z_dim, y_dim, x_dim = bossdb_dataset.shape
-        print(f"This dataset is {x_dim} voxels in the X dimension, {y_dim} voxels in the Y dimension, and {z_dim} voxels in the Z dimension in base resolution.")
+        print(f"This dataset is {x_dim} voxels in the X dimension, {y_dim} voxels in the Y dimension, and {z_dim} voxels in the Z dimension in resolution {resolution}")
         if (file_path is None):
             print("Input file path and optionally required resolution and dimensions to download images. ")
     except requests.exceptions.HTTPError as e:
@@ -49,13 +49,12 @@ def intern_info(url, file_path):
         return
 
 def cloud_info(url, resolution, file_path):
-    vol = CloudVolume(url, use_https=True)
+    vol = CloudVolume(url, mip=resolution, use_https=True)
     avail_res = list(vol.available_mips)
     
     if resolution not in avail_res:
         raise ValueError(f"Specified resolution {resolution} is not available. Available resolutions are: {avail_res}")
     
-    vol = CloudVolume(url, mip=resolution, use_https=True)
     bounds = vol.bounds
     x_bounds = (bounds.minpt[0], bounds.maxpt[0])
     y_bounds = (bounds.minpt[1], bounds.maxpt[1])
@@ -171,7 +170,7 @@ def main():
         url = f"bossdb://{args.url}" if args.mode == "intern" else f"s3://bossdb-open-data/{args.url}"
 
         if args.mode == "intern":
-            intern_info(url, args.file_path)
+            intern_info(url, args.resolution, args.file_path)
         else:
             cloud_info(url, args.resolution, args.file_path)
 
