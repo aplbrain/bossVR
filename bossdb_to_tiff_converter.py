@@ -2,11 +2,8 @@ import argparse
 import os
 from PIL import Image
 import requests
-
-# Intern imports
+from tqdm import tqdm
 from intern import array
-
-# Cloud imports
 from cloudvolume import CloudVolume
 
 def get_indices(dim_name, coord_dims, indices, is_cloud=False):
@@ -24,18 +21,18 @@ def get_indices(dim_name, coord_dims, indices, is_cloud=False):
 def save_slices_as_tiff(dataset, path, file_location, z_start, is_cloud=False):
     if is_cloud:
         z_dim = dataset.shape[2]
-        for i in range(z_dim):
+        for i in tqdm(range(z_dim), desc="Saving slices (CloudVolume)"):
             slice_image = dataset[:, :, i][:, :, 0]
             img = Image.fromarray(slice_image)
             img.save(os.path.join(file_location, f'{path}_{z_start + 1 + i:03d}.tiff'))
     else:
         z_dim = dataset.shape[0]
-        for i in range(z_dim):
+        for i in tqdm(range(z_dim), desc="Saving slices (Intern)"):
             slice_image = dataset[i, :, :]
             img = Image.fromarray(slice_image)
             img.save(os.path.join(file_location, f'{path}_{z_start + 1 + i:03d}.tiff'))
     
-    print(f"{z_dim} images have been saved to the specified directory.")
+    print(f"{z_dim} images have been saved to {file_location}.")
 
 def intern_info(url, resolution, file_path):
     try:
@@ -150,7 +147,7 @@ def cloud_convert(url, path, resolution, x, y, z, file_path):
 def parse_url(url):
     parts = url.split("/")
     if len(parts) < 2:
-        raise ValueError("Invalid format. Please enter dataset information as Collection/Experiment/Channel.")
+        raise ValueError("Invalid format. Please enter dataset information as Collection/Experiment/Channel or the appropriate CloudVolume Path.")
 
 def main():
     parser = argparse.ArgumentParser(description="BossDB Image Conversion Script")
