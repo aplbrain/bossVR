@@ -4,18 +4,13 @@ This script allows you to interact with datasets from BossDB and CloudVolume. Yo
 
 ## Requirements
 
-- Python 3.x
-- `numpy` (version = 1.26.4)
-- `intern` (for accessing BossDB data, follow [installation instructions](https://github.com/jhuapl-boss/intern))
-- `CloudVolume` (for reading and writing of NeuroGlancer datasets and access to more detailed dataset info, follow [installation instructions](https://github.com/seung-lab/cloud-volume?tab=readme-ov-file))
-- `PIL` (Python Imaging Library, for image processing)
-- `requests` (for making HTTP requests)
-
-All the requirements and packages can be installed using the `requirements.txt` file:
+All the required packages can be installed using the `requirements.txt` file:
 
 ```sh
 pip install -r requirements.txt
 ```
+
+This code supports usage of both `intern` and  `CloudVolume` for reading of BossDB data and access to more detailed dataset info. Follow [intern installation instructions](https://github.com/jhuapl-boss/intern)) and [CloudVolume installation instructions](https://github.com/seung-lab/cloud-volume?tab=readme-ov-file)) for more information.
 
 ## Usage
 
@@ -24,7 +19,7 @@ The script can operate in two modes: `intern` for BossDB and `cloud` for CloudVo
 ### Command-Line Arguments
 
 - `-m`, `--mode`: Mode of implementation (`intern` or `cloud`). Required.
-- `-p`, `--path`: BossDB or CloudVolume path. Required.
+- `-u`, `--url`: BossDB or CloudVolume path. Required.
 - `-r`, `--resolution`: Desired resolution level. Default is 0.
 - `-x`, `--x_dimensions`: Range for X dimension in the format `x_start:x_stop`. Optional. By default, the entire range is extracted.
 - `-y`, `--y_dimensions`: Range for Y dimension in the format `y_start:y_stop`. Optional. By default, the entire range is extracted.
@@ -40,13 +35,13 @@ To get information about the dataset without downloading images:
 With Intern:
 
 ```sh
-python script.py -m intern -u myCollection/myExperiment/myChannel
+python bossdb_to_tiff_converter.py -m intern -u myCollection/myExperiment/myChannel
 ```
 
 With CloudVolume:
 
 ```sh
-python script.py -m cloud -u myCollection/myExperiment/myChannel
+python bossdb_to_tiff_converter.py -m cloud -u myCollection/myExperiment/myChannel
 ```
 
 #### 2. Download Images from BossDB
@@ -54,7 +49,7 @@ python script.py -m cloud -u myCollection/myExperiment/myChannel
 To download images using `intern`, default mode:
 
 ```sh
-python script.py -m intern -u myCollection/myExperiment/myChannel -f /path/to/save/images
+python bossdb_to_tiff_converter.py -m intern -u myCollection/myExperiment/myChannel -f /path/to/save/images
 ```
 
 #### 3. Download Images from CloudVolume
@@ -62,7 +57,7 @@ python script.py -m intern -u myCollection/myExperiment/myChannel -f /path/to/sa
 To download images using `CloudVolume`, default mode:
 
 ```sh
-python script.py -m cloud -u myCollection/myExperiment/myChannel -f /path/to/save/images
+python bossdb_to_tiff_converter.py -m cloud -u myCollection/myExperiment/myChannel -f /path/to/save/images
 ```
 
 ### Detailed Examples with Dimension and Resolution Specifications
@@ -70,13 +65,13 @@ python script.py -m cloud -u myCollection/myExperiment/myChannel -f /path/to/sav
 #### BossDB Example
 
 ```sh
-python script.py -m intern -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
+python bossdb_to_tiff_converter.py -m intern -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
 ```
 
 #### CloudVolume Example
 
 ```sh
-python script.py -m cloud -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:1000 -f /path/to/save/images
+python bossdb_to_tiff_converter.py -m cloud -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:1000 -f /path/to/save/images
 ```
 
 ## Script Details
@@ -101,7 +96,7 @@ To run the script, use the command-line examples provided above, specifying the 
 
 ### Running Tests
 
-To run tests using `pytest`, navigate to the `bossdb_code` directory and use the following command:
+To run tests using `pytest`, navigate to the main directory and use the following command:
 
 ```sh
 pytest
