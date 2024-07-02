@@ -41,7 +41,7 @@ python bossdb_to_tiff_converter.py -m intern -u myCollection/myExperiment/myChan
 With CloudVolume:
 
 ```sh
-python bossdb_to_tiff_converter.py -m cloud -u myCollection/myExperiment/myChannel
+python bossdb_to_tiff_converter.py -m cloud -u myBossDB/url
 ```
 
 #### 2. Download Images from BossDB
@@ -57,12 +57,12 @@ python bossdb_to_tiff_converter.py -m intern -u myCollection/myExperiment/myChan
 To download images using `CloudVolume`, default mode:
 
 ```sh
-python bossdb_to_tiff_converter.py -m cloud -u myCollection/myExperiment/myChannel -f /path/to/save/images
+python bossdb_to_tiff_converter.py -m cloud -u myBossDB/url -f /path/to/save/images
 ```
 
 ### Detailed Examples with Dimension and Resolution Specifications
 
-#### BossDB Example
+#### Intern Example
 
 ```sh
 python bossdb_to_tiff_converter.py -m intern -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
@@ -71,7 +71,7 @@ python bossdb_to_tiff_converter.py -m intern -u myCollection/myExperiment/myChan
 #### CloudVolume Example
 
 ```sh
-python bossdb_to_tiff_converter.py -m cloud -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:1000 -f /path/to/save/images
+python bossdb_to_tiff_converter.py -m cloud -u myBossDB/url -r 2 -x 0:1000 -y 0:1000 -z 0:1000 -f /path/to/save/images
 ```
 
 ## Script Details
