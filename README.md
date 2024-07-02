@@ -40,13 +40,13 @@ To get information about the dataset without downloading images:
 With Intern:
 
 ```sh
-python script.py -t intern -u myCollection/myExperiment/myChannel
+python script.py -m intern -u myCollection/myExperiment/myChannel
 ```
 
 With CloudVolume:
 
 ```sh
-python script.py -t cloud -u myCollection/myExperiment/myChannel
+python script.py -m cloud -u myCollection/myExperiment/myChannel
 ```
 
 #### 2. Download Images from BossDB
@@ -54,7 +54,7 @@ python script.py -t cloud -u myCollection/myExperiment/myChannel
 To download images using `intern`, default mode:
 
 ```sh
-python script.py -t intern -u myCollection/myExperiment/myChannel -f /path/to/save/images
+python script.py -m intern -u myCollection/myExperiment/myChannel -f /path/to/save/images
 ```
 
 #### 3. Download Images from CloudVolume
@@ -62,7 +62,7 @@ python script.py -t intern -u myCollection/myExperiment/myChannel -f /path/to/sa
 To download images using `CloudVolume`, default mode:
 
 ```sh
-python script.py -t cloud -u myCollection/myExperiment/myChannel -f /path/to/save/images
+python script.py -m cloud -u myCollection/myExperiment/myChannel -f /path/to/save/images
 ```
 
 ### Detailed Examples with Dimension and Resolution Specifications
@@ -70,13 +70,13 @@ python script.py -t cloud -u myCollection/myExperiment/myChannel -f /path/to/sav
 #### BossDB Example
 
 ```sh
-python script.py -t intern -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
+python script.py -m intern -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
 ```
 
 #### CloudVolume Example
 
 ```sh
-python script.py -t cloud -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:1000 -f /path/to/save/images
+python script.py -m cloud -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:1000 -f /path/to/save/images
 ```
 
 ## Script Details
