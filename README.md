@@ -44,7 +44,7 @@ With CloudVolume:
 python bossdb_to_tiff_converter.py -m cloud -u myBossDB/url
 ```
 
-#### 2. Download Images from BossDB
+#### 2. Download Images with Intern
 
 To download images using `intern`, default mode:
 
@@ -52,7 +52,7 @@ To download images using `intern`, default mode:
 python bossdb_to_tiff_converter.py -m intern -u myCollection/myExperiment/myChannel -f /path/to/save/images
 ```
 
-#### 3. Download Images from CloudVolume
+#### 3. Download Images with CloudVolume
 
 To download images using `CloudVolume`, default mode:
 
