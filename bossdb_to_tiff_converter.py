@@ -5,6 +5,7 @@ import requests
 from tqdm import tqdm
 from intern import array
 from cloudvolume import CloudVolume
+import pandas as pd
 
 def get_indices(dim_name, coord_dims, indices, is_cloud=False):
     start, stop = map(int, indices.split(":"))
@@ -32,41 +33,63 @@ def save_slices_as_tiff(dataset, path, file_location, z_start, is_cloud=False):
             img = Image.fromarray(slice_image)
             img.save(os.path.join(file_location, f'{path}_{z_start + 1 + i:03d}.tiff'))
     
-    print(f"{z_dim} images have been saved to {file_location}.")
+    print(f"{z_dim} images have been saved to {file_location}")
 
-def intern_info(url, resolution, file_path):
+def intern_info(url, resolution):    
     try:
-        bossdb_dataset = array(url, resolution=resolution)
-        z_dim, y_dim, x_dim = bossdb_dataset.shape
-        print(f"This dataset is {x_dim} voxels in the X dimension, {y_dim} voxels in the Y dimension, and {z_dim} voxels in the Z dimension in resolution {resolution}")
-        if (file_path is None):
-            print("Input file path and optionally required resolution and dimensions to download images. ")
+        # First download base resolution to get all available res and check if input res is available
+        bossdb_dataset = array(url)
+        avail_res = bossdb_dataset.available_resolutions
+        if resolution is not None and resolution not in avail_res:
+            raise ValueError(f"Specified resolution {resolution} is not available. Available resolutions are: {avail_res}")
+
+        # Display dimensions for all available resolutions
+        res_dims = []
+        for res in avail_res:
+            arr_res = array(url, resolution=res)
+            z_dim, y_dim, x_dim = arr_res.shape
+            res_dims.append([res, x_dim, y_dim, z_dim])
+
+        df = pd.DataFrame(res_dims, columns=["Resolution", "X (voxels)", "Y (voxels)", "Z (voxels)"])
+        print(df.to_string(index=False))
+        # Display dimensions for requested resolution
+        req_dims = df[df["Resolution"] == resolution]
+        print(f"Requested resolution {resolution} has dimensions X: {req_dims['X (voxels)'].values[0]}, Y: {req_dims['Y (voxels)'].values[0]}, Z: {req_dims['Z (voxels)'].values[0]} voxels")
+
     except requests.exceptions.HTTPError as e:
         print(f"Error: {e.response.json().get('message')}")
         return
 
-def cloud_info(url, resolution, file_path):
-    vol = CloudVolume(url, mip=resolution, use_https=True)
-    avail_res = list(vol.available_mips)
-    
-    if resolution not in avail_res:
-        raise ValueError(f"Specified resolution {resolution} is not available. Available resolutions are: {avail_res}")
-    
-    bounds = vol.bounds
-    x_bounds = (bounds.minpt[0], bounds.maxpt[0])
-    y_bounds = (bounds.minpt[1], bounds.maxpt[1])
-    z_bounds = (bounds.minpt[2], bounds.maxpt[2])
-
+def cloud_info(url, resolution):    
     try:
-        print(f"This dataset has dimensions X: {x_bounds}, Y: {y_bounds}, Z: {z_bounds} at resolution {resolution}")
-        print(f"Available mipmap levels: {avail_res}")
-        if (file_path is None):
-            print("Input file path and optionally required resolution and dimensions to download images. ")
+        # First download base resolution to get all available res and check if input res is available
+        vol = CloudVolume(url, use_https=True)
+        avail_res = list(vol.available_mips)
+        if resolution is not None and resolution not in avail_res:
+            raise ValueError(f"Specified resolution {resolution} is not available. Available resolutions are: {avail_res}")
+
+        # Display dimensions for all available resolutions
+        res_dims = []
+        for res in avail_res:
+            vol_res = CloudVolume(url, mip=res, use_https=True)
+            bounds_res = vol_res.bounds
+            x_bounds = bounds_res.maxpt[0] - bounds_res.minpt[0]
+            y_bounds = bounds_res.maxpt[1] - bounds_res.minpt[1]
+            z_bounds = bounds_res.maxpt[2] - bounds_res.minpt[2]
+            res_dims.append([res, x_bounds, y_bounds, z_bounds])
+
+        df = pd.DataFrame(res_dims, columns=["Resolution", "X (voxels)", "Y (voxels)", "Z (voxels)"])
+        print(df.to_string(index=False))
+
+        # Display dimensions for requested resolution
+        req_dims = df[df["Resolution"] == resolution]
+        print(f"Requested resolution {resolution} has dimensions X: {req_dims['X (voxels)'].values[0]}, Y: {req_dims['Y (voxels)'].values[0]}, Z: {req_dims['Z (voxels)'].values[0]} voxels")
+
     except requests.exceptions.HTTPError as e:
         print(f"Error: {e.response.json().get('message')}")
         return
 
-def intern_convert(url, path, resolution, x, y, z, file_path):
+def intern_convert(url, path, resolution, x, y, z, output_path):
     try:
         bossdb_dataset = array(url, resolution=resolution)
         z_dim, y_dim, x_dim = bossdb_dataset.shape
@@ -94,18 +117,18 @@ def intern_convert(url, path, resolution, x, y, z, file_path):
         cutout = bossdb_dataset[z_start:z_stop, y_start:y_stop, x_start:x_stop]
         print("Download complete.")
 
-        if not os.path.exists(file_path):
-            os.makedirs(file_path)
-            print(f"Directory {file_path} created.")
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+            print(f"Directory {output_path} created.")
 
-        save_slices_as_tiff(cutout, path, file_path, z_start)
+        save_slices_as_tiff(cutout, path, output_path, z_start)
 
     except requests.exceptions.HTTPError as e:
         print(f"Error: {e.response.json().get('message')}")
     except ValueError as e:
         print(f"Error: {e}")
 
-def cloud_convert(url, path, resolution, x, y, z, file_path):
+def cloud_convert(url, path, resolution, x, y, z, output_path):
     try:
         vol = CloudVolume(url, mip=resolution, use_https=True)
         bounds = vol.bounds
@@ -133,11 +156,11 @@ def cloud_convert(url, path, resolution, x, y, z, file_path):
         cutout = vol[x_start:x_stop, y_start:y_stop, z_start:z_stop]
         print("Download complete.")
 
-        if not os.path.exists(file_path):
-            os.makedirs(file_path)
-            print(f"Directory {file_path} created.")
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+            print(f"Directory {output_path} created.")
 
-        save_slices_as_tiff(cutout, path, file_path, z_start, is_cloud=True)
+        save_slices_as_tiff(cutout, path, output_path, z_start, is_cloud=True)
 
     except requests.exceptions.HTTPError as e:
         print(f"Error: {e.response.json().get('message')}")
@@ -151,31 +174,35 @@ def parse_url(url):
 
 def main():
     parser = argparse.ArgumentParser(description="BossDB Image Conversion Script")
-    parser.add_argument("-m", "--mode", required=True, choices=["intern", "cloud"], help="Mode of implementation (intern or cloud)")
+    parser.add_argument("mode", choices=["info", "download"], help="Command to either get info or download images")
     parser.add_argument("-u", "--url", required=True, nargs='+', help="BossDB or CloudVolume path")    
+    parser.add_argument("-m", "--method", choices=["intern", "cloud"], default='cloud', help="Mode of download (intern or cloud)")
     parser.add_argument("-r", "--resolution", type=int, default=0, help="Desired resolution level")
     parser.add_argument("-x", "--x_dimensions", help="Range for x in the format x_start:x_stop")
     parser.add_argument("-y", "--y_dimensions", help="Range for y in the format y_start:y_stop")
     parser.add_argument("-z", "--z_dimensions", help="Range for z in the format z_start:z_stop")
-    parser.add_argument("-f", "--file_path", help="Directory where the TIFF files should be saved")
+    parser.add_argument("-o", "--output_path", default=".", help="Directory where the TIFF files should be saved")
 
     args = parser.parse_args()
     args.url = ''.join(args.url)
 
     try:
         parse_url(args.url)
-        url = f"bossdb://{args.url}" if args.mode == "intern" else f"s3://bossdb-open-data/{args.url}"
+        url = f"bossdb://{args.url}" if args.method == "intern" else f"s3://bossdb-open-data/{args.url}"
 
-        if args.mode == "intern":
-            intern_info(url, args.resolution, args.file_path)
-        else:
-            cloud_info(url, args.resolution, args.file_path)
-
-        if args.file_path is not None:
-            if args.mode == "intern":
-                intern_convert(url, args.url.replace("/", "_"), args.resolution, args.x_dimensions, args.y_dimensions, args.z_dimensions, args.file_path)
+        if args.mode == "info":
+            print("Extracting dimension information...")
+            if args.method == "intern":
+                intern_info(url, args.resolution)
             else:
-                cloud_convert(url, args.url.replace("/", "_"), args.resolution, args.x_dimensions, args.y_dimensions, args.z_dimensions, args.file_path)
+                cloud_info(url, args.resolution)
+        elif args.mode == "download":
+            if args.output_path is None:
+                raise ValueError("File path must be specified for download command")
+            if args.method == "intern":
+                intern_convert(url, args.url.replace("/", "_"), args.resolution, args.x_dimensions, args.y_dimensions, args.z_dimensions, args.output_path)
+            else:
+                cloud_convert(url, args.url.replace("/", "_"), args.resolution, args.x_dimensions, args.y_dimensions, args.z_dimensions, args.output_path)
     
     except ValueError as e:
         print(f"Error: {str(e)}")
