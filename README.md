@@ -25,7 +25,7 @@ The script can operate in two modes: `info`, to provide information about the da
 ### Command-Line Arguments
 - `mode`: Mode of script (`info` or `download`). Positional argument. Required.
 - `-u`, `--url`: BossDB or CloudVolume path. Required.
-- `-m`, `--method`: Method of implementation (`intern` or `cloud`). Optional. By default, `intern` is used.
+- `-m`, `--method`: Method of implementation (`intern` or `cloud`). Optional. By default, `cloud` is used.
 - `-r`, `--resolution`: Desired resolution level. Optional. By default, resolution=0.
 - `-x`, `--x_dimensions`: Range for X dimension in the format `x_start:x_stop`. Optional. By default, the entire range is extracted.
 - `-y`, `--y_dimensions`: Range for Y dimension in the format `y_start:y_stop`. Optional. By default, the entire range is extracted.
@@ -40,13 +40,13 @@ In `info` mode, the script will output the X, Y, and Z dimensions of the dataset
 With Intern:
 
 ```sh
-python bossdb_to_tiff_converter.py info -u myCollection/myExperiment/myChannel
+python bossdb_to_tiff_converter.py info -m intern -u myCollection/myExperiment/myChannel
 ```
 
 With CloudVolume
 
 ```sh
-python bossdb_to_tiff_converter.py info -m cloud -u myBossDB/s3/url
+python bossdb_to_tiff_converter.py info -u myBossDB/s3/url
 ```
 
 #### 2. Download Images with Intern
@@ -56,13 +56,13 @@ In download mode, by default, images will download in the default directory.
 To download images using `intern`, default mode:
 
 ```sh
-python bossdb_to_tiff_converter.py download -u myCollection/myExperiment/myChannel
+python bossdb_to_tiff_converter.py download -m intern -u myCollection/myExperiment/myChannel
 ```
 
 To download images using `intern`, specifying output directory:
 
 ```sh
-python bossdb_to_tiff_converter.py download -u myCollection/myExperiment/myChannel -f /path/to/save/images
+python bossdb_to_tiff_converter.py download -m intern -u myCollection/myExperiment/myChannel -f /path/to/save/images
 ```
 
 #### 3. Download Images with CloudVolume
@@ -70,13 +70,13 @@ python bossdb_to_tiff_converter.py download -u myCollection/myExperiment/myChann
 To download images using `CloudVolume`, default mode:
 
 ```sh
-python bossdb_to_tiff_converter.py download -m cloud -u myBossDB/s3/url
+python bossdb_to_tiff_converter.py download -u myBossDB/s3/url
 ```
 
 To download images using `CloudVolume`, specifying output directory:
 
 ```sh
-python bossdb_to_tiff_converter.py download -m cloud -u myBossDB/s3/url -f /path/to/save/images
+python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -f /path/to/save/images
 ```
 
 ### Detailed Examples with Dimension, Resolution, and Output Specifications
@@ -86,13 +86,13 @@ python bossdb_to_tiff_converter.py download -m cloud -u myBossDB/s3/url -f /path
 In `info` mode with `intern`, resolution can be specified:
 
 ```sh
-python bossdb_to_tiff_converter.py info -u myCollection/myExperiment/myChannel -r 2
+python bossdb_to_tiff_converter.py info -intern -u myCollection/myExperiment/myChannel -r 2
 ```
 
 In `download` mode with `intern`, resolution, dimension ranges to download over, and output file path can be specified:
 
 ```sh
-python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
+python bossdb_to_tiff_converter.py download -intern -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
 ```
 
 #### CloudVolume Examples
@@ -100,13 +100,13 @@ python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -r 2 -x 0:1000 -y
 In `info` mode with `cloud`, resolution can be specified:
 
 ```sh
-python bossdb_to_tiff_converter.py info -m cloud -u myBossDB/s3/url -r 2
+python bossdb_to_tiff_converter.py info -u myBossDB/s3/url -r 2
 ```
 
 In `download` mode with `cloud`, resolution, dimension ranges to download over, and output file path can be specified:
 
 ```sh
-python bossdb_to_tiff_converter.py download -m cloud -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
+python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
 ```
 
 ## Script Details
