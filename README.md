@@ -51,7 +51,7 @@ python bossdb_to_tiff_converter.py info -m cloud -u myBossDB/s3/url
 
 #### 2. Download Images with Intern
 
-By default, images will download in the default directory. 
+In download mode, by default, images will download in the default directory. 
 
 To download images using `intern`, default mode:
 
@@ -66,8 +66,6 @@ python bossdb_to_tiff_converter.py download -u myCollection/myExperiment/myChann
 ```
 
 #### 3. Download Images with CloudVolume
-
-By default, images will download in the default directory. 
 
 To download images using `CloudVolume`, default mode:
 
@@ -85,23 +83,27 @@ python bossdb_to_tiff_converter.py download -m cloud -u myBossDB/s3/url -f /path
 
 #### Intern Examples
 
-In `info` mode, resolution can be specified:
+In `info` mode with `intern`, resolution can be specified:
 
 ```sh
 python bossdb_to_tiff_converter.py info -u myCollection/myExperiment/myChannel -r 2
 ```
 
-In `download` mode, resolution, dimension ranges to download over, and output file path can be specified:
+In `download` mode with `intern`, resolution, dimension ranges to download over, and output file path can be specified:
 
 ```sh
-python bossdb_to_tiff_converter.py download -u myCollection/myExperiment/myChannel -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
+python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
 ```
 
-#### CloudVolume Example
+#### CloudVolume Examples
+
+In `info` mode with `cloud`, resolution can be specified:
 
 ```sh
 python bossdb_to_tiff_converter.py info -m cloud -u myBossDB/s3/url -r 2
 ```
+
+In `download` mode with `cloud`, resolution, dimension ranges to download over, and output file path can be specified:
 
 ```sh
 python bossdb_to_tiff_converter.py download -m cloud -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
