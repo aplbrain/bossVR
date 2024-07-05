@@ -1,0 +1,19 @@
+name: newone
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - matplotlib
+  - numpy=1.26.4
+  - pandas
+  - pillow
+  - pooch
+  - pytest
+  - requests
+  - scikit-image
+  - tqdm
+  - pip
+  - pip:
+    - cloud-volume
+    - intern
