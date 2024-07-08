@@ -62,7 +62,7 @@ python bossdb_to_tiff_converter.py download -m intern -u myCollection/myExperime
 To download images using `intern`, specifying output directory:
 
 ```sh
-python bossdb_to_tiff_converter.py download -m intern -u myCollection/myExperiment/myChannel -f /path/to/save/images
+python bossdb_to_tiff_converter.py download -m intern -u myCollection/myExperiment/myChannel -o /path/to/save/images
 ```
 
 #### 3. Download Images with CloudVolume
@@ -76,7 +76,7 @@ python bossdb_to_tiff_converter.py download -u myBossDB/s3/url
 To download images using `CloudVolume`, specifying output directory:
 
 ```sh
-python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -f /path/to/save/images
+python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -o /path/to/save/images
 ```
 
 ### Detailed Examples with Dimension, Resolution, and Output Specifications
@@ -92,7 +92,7 @@ python bossdb_to_tiff_converter.py info -intern -u myCollection/myExperiment/myC
 In `download` mode with `intern`, resolution, dimension ranges to download over, and output file path can be specified:
 
 ```sh
-python bossdb_to_tiff_converter.py download -intern -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
+python bossdb_to_tiff_converter.py download -intern -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -o /path/to/save/images
 ```
 
 #### CloudVolume Examples
@@ -106,7 +106,7 @@ python bossdb_to_tiff_converter.py info -u myBossDB/s3/url -r 2
 In `download` mode with `cloud`, resolution, dimension ranges to download over, and output file path can be specified:
 
 ```sh
-python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -f /path/to/save/images
+python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -o /path/to/save/images
 ```
 
 ## Script Details
