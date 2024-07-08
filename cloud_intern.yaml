@@ -1,4 +1,4 @@
-name: newone
+name: cloud_intern
 channels:
   - conda-forge
   - defaults
