@@ -1,6 +1,6 @@
-# BossDB Image Conversion Script
+# syGlass Project Creation for BossDB Datasets
 
-This script allows you to interact with datasets from [BossDB](https://bossdb.org/projects) with `intern` and `CloudVolume`. You can retrieve information about the dataset or download images in TIFF format with command-line interface. 
+This script allows you to create syGlass projects for datasets from [BossDB](https://bossdb.org/projects) with `intern` and `CloudVolume`. You can retrieve information about the datasetn, download image and segmentation data in TIFF format, and create syGlass projects with image and mask layers. 
 
 ## Requirements
 
@@ -20,17 +20,9 @@ This code supports usage of both `intern` and  `CloudVolume` for reading of Boss
 
 ## Usage
 
-The script can operate in two modes: `info`, to provide information about the dataset, or `download`, to download the images based on the provided parameters. Additionally, it can operate with either `intern` or `CloudVolume`
+The script can operate in three modes: `info`, to provide information about the dataset, `image`, to only download the images as TIFFs based on the provided parameters, and `info` to download the images as TIFFs and create the corresponding syGlass project. Additionally, it can operate with either `intern` or `CloudVolume`
 
-### Command-Line Arguments
-- `mode`: Mode of script (`info` or `download`). Positional argument. Required.
-- `-u`, `--url`: BossDB or CloudVolume path. Required.
-- `-m`, `--method`: Method of implementation (`intern` or `cloud`). Optional. By default, `cloud` is used.
-- `-r`, `--resolution`: Desired resolution level. Optional. By default, resolution=0.
-- `-x`, `--x_dimensions`: Range for X dimension in the format `x_start:x_stop`. Optional. By default, the entire range is extracted.
-- `-y`, `--y_dimensions`: Range for Y dimension in the format `y_start:y_stop`. Optional. By default, the entire range is extracted.
-- `-z`, `--z_dimensions`: Range for Z dimension in the format `z_start:z_stop`. Optional. By default, the entire range is extracted.
-- `-o`, `--output_path`: Directory where the TIFF files should be saved. Optional. By default, images will be saved in the default directory .
+
 ### Examples
 
 #### 1. Retrieve Information About the Dataset
