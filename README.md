@@ -22,111 +22,18 @@ This code supports usage of both `intern` and  `CloudVolume` for reading of Boss
 
 The script can operate in three modes: `info`, to provide information about the dataset, `image`, to only download the images as TIFFs based on the provided parameters, and `info` to download the images as TIFFs and create the corresponding syGlass project. Additionally, it can operate with either `intern` or `CloudVolume`
 
+### Configuration File Arguments
 
-### Examples
+To run the script, modify the parameters in the configuration file in the same directory as the script, config.ini
 
-#### 1. Retrieve Information About the Dataset
-
-In `info` mode, the script will output the X, Y, and Z dimensions of the dataset at each available resolution level, in voxels, without downloading images.
-
-With Intern:
-
-```sh
-python bossdb_to_tiff_converter.py info -m intern -u myCollection/myExperiment/myChannel
-```
-
-With CloudVolume
-
-```sh
-python bossdb_to_tiff_converter.py info -u myBossDB/s3/url
-```
-
-#### 2. Download Images with Intern
-
-In download mode, by default, images will download in the default directory. 
-
-To download images using `intern`, default mode:
-
-```sh
-python bossdb_to_tiff_converter.py download -m intern -u myCollection/myExperiment/myChannel
-```
-
-To download images using `intern`, specifying output directory:
-
-```sh
-python bossdb_to_tiff_converter.py download -m intern -u myCollection/myExperiment/myChannel -o /path/to/save/images
-```
-
-#### 3. Download Images with CloudVolume
-
-To download images using `CloudVolume`, default mode:
-
-```sh
-python bossdb_to_tiff_converter.py download -u myBossDB/s3/url
-```
-
-To download images using `CloudVolume`, specifying output directory:
-
-```sh
-python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -o /path/to/save/images
-```
-
-### Detailed Examples with Dimension, Resolution, and Output Specifications
-
-#### Intern Examples
-
-In `info` mode with `intern`, resolution can be specified:
-
-```sh
-python bossdb_to_tiff_converter.py info -intern -u myCollection/myExperiment/myChannel -r 2
-```
-
-In `download` mode with `intern`, resolution, dimension ranges to download over, and output file path can be specified:
-
-```sh
-python bossdb_to_tiff_converter.py download -intern -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -o /path/to/save/images
-```
-
-#### CloudVolume Examples
-
-In `info` mode with `cloud`, resolution can be specified:
-
-```sh
-python bossdb_to_tiff_converter.py info -u myBossDB/s3/url -r 2
-```
-
-In `download` mode with `cloud`, resolution, dimension ranges to download over, and output file path can be specified:
-
-```sh
-python bossdb_to_tiff_converter.py download -u myBossDB/s3/url -r 2 -x 0:1000 -y 0:1000 -z 0:100 -o /path/to/save/images
-```
-
-## Script Details
-
-### Functions
-
-- `get_indices(dim_name, coord_dims, indices, is_cloud=False)`: Validates and returns the start and stop indices for the specified dimension.
-- `save_slices_as_tiff(dataset, url, file_location, z_start, is_cloud=False)`: Saves the image slices as TIFF files.
-- `intern_info(url, resolution)`: Retrieves and prints information about the dataset in `intern` mode.
-- `cloud_info(url, resolution)`: Retrieves and prints information about the dataset in `cloud` mode.
-- `intern_convert(url, path, resolution, x, y, z, output_path)`: Downloads and saves image slices from BossDB.
-- `cloud_convert(url, path, resolution, x, y, z, output_path)`: Downloads and saves image slices from CloudVolume.
-- `parse_url(url)`: Parses and validates the URL format.
-
-### Main Function
-
-The `main` function uses `argparse` to parse command-line arguments and calls the appropriate functions based on the mode (`intern` or `cloud`) and the provided parameters.
-
-### Running the Script
-
-To run the script, refer to the command-line examples provided above, specifying the appropriate arguments for your use case.
-
-### Running Tests
-
-To run tests using `pytest`, navigate to the main directory and use the following command:
-
-```sh
-pytest
-```
-
-This will discover and run all the tests in the `tests` directory.
+- `mode`: Mode of script (`info`, `download`, `project`).
+- `img_uri`: BossDB or CloudVolume image data URI.
+- `img_res`: Desired resolution for image data. By default, img_res=0  
+- `seg`: Indicates whether the user wants to download segmentation data and add a mask layer to the project. By default, it is true.
+- `seg_uri`: BossDB or CloudVolume segmentation data URI.
+- `seg_res`: Desired resolution for segmentation data. By default, seg_res=0
+- `method`: Method of image downloading (`intern` or `cloud`). By default, method=cloud
+- `x_dimensions`: Range for X dimension in the format `x_start:x_stop`. If not provided, the entire range is extracted.
+- `y_dimensions`: Range for X dimension in the format `x_start:x_stop`. If not provided, the entire range is extracted.
+- `z_dimensions`: Range for X dimension in the format `x_start:x_stop`. If not provided, the entire range is extracted.
+- `output_path`: Directory where the syGlass project and TIFF files should be saved. If not provided, images will be saved in the default directory .
