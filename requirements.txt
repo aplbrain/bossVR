@@ -8,4 +8,5 @@ pooch
 pytest
 requests
 scikit-image
+syglass
 tqdm
