@@ -9,6 +9,7 @@ dependencies:
   - pandas
   - pillow
   - pooch
+  - syglass
   - pytest
   - requests
   - scikit-image
