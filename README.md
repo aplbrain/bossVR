@@ -1,6 +1,6 @@
 # syGlass Project Creation for BossDB Datasets
 
-This script allows you to create syGlass projects for datasets from [BossDB](https://bossdb.org/projects) with `intern` and `CloudVolume`. You can retrieve information about the datasetn, download image and segmentation data in TIFF format, and create syGlass projects with image and mask layers. 
+This script allows you to create syGlass projects for datasets from [BossDB](https://bossdb.org/projects) with `intern` and `CloudVolume`. You can retrieve information about the dataset, download image and segmentation data in TIFF format, and create syGlass projects with image and mask layers. 
 
 ## Requirements
 
