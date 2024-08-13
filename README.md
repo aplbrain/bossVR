@@ -1,4 +1,5 @@
 # BossVR
+![Logo](bossVR.jfif)
 
 This script allows you to interact with datasets from [BossDB](https://bossdb.org/projects) and create and modify syGlass projects. You can retrive information about the dataset, download images in TIFF format, download and transform meshes, create syGlass projects with image stacks, mask layers, and meshes, and upload and export annotations/  
 
