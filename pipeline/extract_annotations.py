@@ -6,10 +6,9 @@ import syglass as sy
 from datetime import datetime
 import numpy as np
 from utils.common_functions import get_indices
-from neurom import load_morphology, features
-from neurom.features.neurite import max_radial_distance
+from utils.common_functions import transform_annotation_points
+from utils.common_functions import save_slices_as_tiff
 import glob
-import neurom as nm
 import tifffile
 
 class Annotations(BaseConfig):
@@ -33,12 +32,12 @@ class Annotations(BaseConfig):
         
         rows = []
         columns = ['id', 'created', 'superceded_id', 'valid', 'classification_system',
-                'cell_type', 'pt_supervoxel_id', 'pt_root_id', 'pt_position']
+                'cell_type', 'pt_supervoxel_id', 'pt_root_id', 'pt_position', 'og_pt_position']
         df = pd.DataFrame(columns=columns)
         unique_id = 1
         for color, vertices in counts.items():
             for vertex in vertices:
-                transformed_vertex = [vertex[0] + x * img_resolution[0], vertex[1] + y * img_resolution[1], vertex[2] + z * img_resolution[2]]
+                transformed_vertex = transform_annotation_points(vertex, img_resolution, x, y, z)
                 new_row = {
                     'id': unique_id,
                     'created': datetime.now().isoformat(),
@@ -48,15 +47,16 @@ class Annotations(BaseConfig):
                     'cell_type': color,
                     'pt_supervoxel_id': '',
                     'pt_root_id': '',
-                    'pt_position': transformed_vertex
+                    'pt_position': transformed_vertex,
+                    'og_pt_position': vertex
                 }
                 rows.append(new_row)
                 unique_id += 1
 
         df = pd.DataFrame(rows, columns=['id', 'created', 'superceded_id', 'valid', 'classification_system',
-                                        'cell_type', 'pt_supervoxel_id', 'pt_root_id', 'pt_position'])        
+                                        'cell_type', 'pt_supervoxel_id', 'pt_root_id', 'pt_position', 'og_pt_position'])        
         return df
-
+       
     def import_tracking_points(self, df_points):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(project_file_location)
@@ -86,7 +86,7 @@ class Annotations(BaseConfig):
         # Call extract_tracking_points to return the df with the new tracking points added
         self.extract_tracking_points()
 
-    def get_volumetric_blocks_around_points(self, side_length=100):
+    def get_all_volumetric_blocks(self, side_length=100):
         # side length is in voxels
         # Get counting points for the default experiment
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
@@ -101,7 +101,7 @@ class Annotations(BaseConfig):
 
         # Iterate over each point in each color series for the default experiment
         blocks = []
-        for color in counts:
+        for block_num, color in enumerate(counts):
                 for point in counts[color]:
                     # Calculate the offset to each cube based on point position
                     offset = np.maximum(point.astype(int) - side_length / 2, np.zeros(3))
@@ -110,28 +110,39 @@ class Annotations(BaseConfig):
                     block = project.get_custom_block(0, resolution, offset, dimensions)
 
                     blocks.append(block)
-        
+                   
         return blocks
+    
+    def get_volumetric_block_around_point(self, block_num, side_length=100):
+        project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
+        project = sy.get_project(project_file_location)
+
+        df_points = self.extract_tracking_points()
+        real_point = df_points.loc[df_points['id'] == block_num, 'og_pt_position']
+        resolution = len(project.get_resolution_map()) - 1
+        offset = np.maximum(real_point.astype(int) - side_length / 2, np.zeros(3))
+        dimensions = np.full(3, side_length)
+        block = project.get_custom_block(0, resolution, offset, dimensions)
+
+        # transform the offset
+        img_vol = CloudVolume(f"s3://bossdb-open-data/{self.img_uri}", mip=self.img_res, fill_missing=True, use_https=True)
+        img_resolution = img_vol.resolution
+        x, _, y, _, z, _ = get_indices(img_vol, self.x_dimensions, self.y_dimensions, self.z_dimensions)
+        transformed_offset = transform_annotation_points(offset, img_resolution, x, y, z)
+
+        # convert to tiff stack
+        save_slices_as_tiff(block.data, self.img_uri.replace("/", "_"), self.output_path, transformed_offset, "block", block_num)
+
+        return block
 
     def export_tracings(self):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(project_file_location)
+        trace_path = os.path.join(self.output_path, "tracings")
+        os.makedirs(trace_path, exist_ok=True)
 
         # save the tracings (will export each disconnected component as a separate SWC file)
-        project.save_tracings()
-
-        # find all the SWC files
-        matchingFiles = glob.glob("*.swc")
-        print(matchingFiles)
-
-        # get first SWC and load into NeuroM
-        nrn = nm.load_neuron(matchingFiles[0])
-        nrnSegLen = nm.get('segment_lengths', nrn)
-        print(sum(nrnSegLen))
-
-        # calculate Sholl Analysis
-        nrnSholl = nm.get('sholl_frequency', nrn)
-        print(nrnSholl)
+        project.save_tracings(directory=trace_path)
     
     def import_tracings(self, trace_file_path):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
@@ -157,6 +168,7 @@ class Annotations(BaseConfig):
 
         # save the ROI data as a tiff file
         roi_mask_block_file_path = os.path.join(self.output_path, self.project_name, f"{self.project_name}_roi_mask_block_tiffs")
+        os.makedirs(roi_mask_block_file_path, exist_ok=True)
         tifffile.imsave(roi_mask_block_file_path, mask_block.data)
     
     def import_roi(self, roi_index, roi_mask):

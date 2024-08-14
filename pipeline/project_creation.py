@@ -5,6 +5,8 @@ from tqdm import tqdm
 import glob
 import os
 import syglass as sy
+from cloudvolume import CloudVolume
+import numpy as np
 
 class ProjectCreation(BaseConfig):
     def __init__(self, config):
@@ -20,6 +22,11 @@ class ProjectCreation(BaseConfig):
         # create project in specified path
         proj_file_location = r'{}'.format(self.output_path)
         project = pyglass.CreateProject(pyglass.path(proj_file_location), self.project_name)
+
+        # specify voxel resolution
+        img_vol = CloudVolume(f"s3://bossdb-open-data/{self.img_uri}", mip=self.img_res, fill_missing=True, use_https=True)
+        img_res_ordered = np.array(list(reversed(list(img_vol.resolution))))
+        project.set_voxel_dimensions(img_res_ordered)
 
         # import image data into project    
         # Create DirectoryDescriptor to search folder for TIFFs, find first image of set, and create file list

@@ -66,3 +66,25 @@ class PipelineController:
     
     def export_tracking_points(self):
         self.extract_annotations.extract_tracking_points()
+
+    def import_tracking_points(self, df):
+        # df is annotation table with points
+        self.extract_annotations.import_tracking_points(df)
+    
+    def get_all_volumetric_blocks(self):
+        self.extract_annotations.get_all_volumetric_blocks()
+    
+    def get_volumetric_block_around_point(self, block_num):
+        self.extract_annotations.get_volumetric_block_around_point(block_num)
+    
+    def export_tracings(self):
+        self.extract_annotations.export_tracings
+    
+    def import_tracings(self, trace_file_path):
+        self.extract_annotations.import_tracings(trace_file_path)
+    
+    def export_roi(self, roi_index):
+        self.extract_annotations.export_roi(roi_index)
+    
+    def export_roi(self, roi_index, roi_mask):
+        self.extract_annotations.import_roi(roi_index, roi_mask)

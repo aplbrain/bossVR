@@ -1,13 +1,13 @@
 from config.base_config import BaseConfig
-from util.common_functions import get_indices
-from util.common_functions import check_res_cloud
+from utils.common_functions import get_indices
+from utils.common_functions import check_res_cloud
 import os
 from PIL import Image
 import requests
 from tqdm import tqdm
 from cloudvolume import CloudVolume
 import numpy as np
-from util.common_functions import flip_images_in_directory
+from utils.common_functions import save_slices_as_tiff
 
 class ImageDownload(BaseConfig):
     def __init__(self, config):
@@ -18,33 +18,6 @@ class ImageDownload(BaseConfig):
             config.CAVEclient, config.mesh_ids, config.mesh_uri,
             config.project_name, config.syglass_directory, config.shader_settings_to_load_path
         )
-
-    def save_slices_as_tiff(self, dataset, path, file_location, z_start, data_type):
-        if np.iinfo(dataset.dtype).max > np.iinfo(np.uint16).max:
-            dataset = dataset.astype(np.uint16)
-
-        first_image = ""
-
-        img_file_location = os.path.join(file_location, data_type)
-        os.makedirs(img_file_location, exist_ok=True)
-        z_dim = dataset.shape[2]
-        for i in tqdm(range(z_dim), desc=f"Saving {data_type} slices"):
-            slice_image = dataset[:, :, i][:, :, 0]
-            img = Image.fromarray(slice_image)
-
-            rotate_img = img.transpose(Image.ROTATE_270)
-            # Flip the image on the Y axis
-            img = rotate_img.transpose(Image.FLIP_LEFT_RIGHT)
-
-            if i == 0:
-                first_image = os.path.join(img_file_location, f'{path}_{z_start + 1:03d}.tiff')
-                img.save(first_image)
-            else:
-                img.save(os.path.join(img_file_location, f'{path}_{z_start + 1 + i:03d}.tiff'))
-            
-        print(f"{z_dim} {data_type} slices have been saved to {img_file_location}")
-
-        return first_image
 
     def cloud_convert(self, data_type='image'):
         try:
@@ -68,7 +41,7 @@ class ImageDownload(BaseConfig):
                 os.makedirs(self.output_path)
                 print(f"Directory {self.output_path} created.")
 
-            first_image = self.save_slices_as_tiff(cutout, uri.replace("/", "_"), self.output_path, z_start, data_type)
+            first_image = save_slices_as_tiff(cutout, uri.replace("/", "_"), self.output_path, z_start, data_type)
             return first_image
 
         except requests.exceptions.HTTPError as e:

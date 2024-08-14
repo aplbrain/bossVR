@@ -1,6 +1,37 @@
 from cloudvolume import CloudVolume
 import os
 from PIL import Image
+import numpy as np
+from tqdm import tqdm
+
+def save_slices_as_tiff(dataset, path, file_location, offset, data_type=""):
+    if np.iinfo(dataset.dtype).max > np.iinfo(np.uint16).max:
+        dataset = dataset.astype(np.uint16)
+    
+    first_image = ""
+    
+    img_file_location = os.path.join(file_location, data_type, dataset) if data_type=="block" else os.path.join(file_location, data_type)
+    
+    os.makedirs(img_file_location, exist_ok=True)
+    z_dim = dataset.shape[0] if data_type=='block'else dataset.shape[2]
+    z_start = offset
+   
+    for i in tqdm(range(z_dim), desc=f"Saving {data_type} slices"):
+        slice_image = dataset[i, :, :, 0] if data_type=='block'else dataset[:, :, i][:, :, 0]
+        img = Image.fromarray(slice_image)
+
+        # Rotate and flip the image
+        rotate_img = img.transpose(Image.ROTATE_270)
+        img = rotate_img.transpose(Image.FLIP_LEFT_RIGHT)
+
+        if i == 0:
+            first_image = os.path.join(img_file_location, f'{path}_{z_start + 1:03d}.tiff')
+            img.save(first_image)
+        else:
+            img.save(os.path.join(img_file_location, f'{path}_{z_start + 1 + i:03d}.tiff'))
+
+    print(f"{z_dim} {data_type} slices have been saved to {img_file_location}")
+    return first_image
 
 def get_pair_indices(index, dim, vol, indices):
     bounds = vol.bounds.minpt[index], vol.bounds.maxpt[index]
@@ -57,3 +88,7 @@ def flip_images_in_directory(img_stack_dir):
                 flipped_img.save(temp_path)
                 # Rename the temporary file to the original file name
                 os.replace(temp_path, file_path)
+
+def transform_annotation_points(vertex, img_resolution, x, y, z):
+    transformed_vertex = [vertex[0] + x * img_resolution[0], vertex[1] + y * img_resolution[1], vertex[2] + z * img_resolution[2]]
+    return transformed_vertex

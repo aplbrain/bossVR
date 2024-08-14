@@ -28,4 +28,4 @@ if __name__ == '__main__':
     )
 
     pipeline = PipelineController(config)
-    pipeline.apply_view_shader_settings()
+    pipeline.run_mesh_download()

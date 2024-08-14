@@ -1,7 +1,7 @@
 from config.base_config import BaseConfig
 from cloudvolume import CloudVolume
 from caveclient import CAVEclient
-from util.common_functions import get_indices
+from utils.common_functions import get_indices
 import os
 import glob
 import trimesh
@@ -31,7 +31,9 @@ class MeshDownload(BaseConfig):
 
             with open(os.path.join(mesh_file_location, f"{mesh_id}.obj"), 'wb') as f:
                 f.write(mesh_obj)
-            
+        
+        print(f"{len(self.mesh_ids)} meshes have been downloaded to {mesh_file_location}")
+
     def download_meshes_cv(self, mesh_file_location):
         mesh_vol = CloudVolume(f"s3://bossdb-open-data/{self.mesh_uri}", fill_missing=True, use_https=True)
 
@@ -45,6 +47,8 @@ class MeshDownload(BaseConfig):
 
             with open(os.path.join(mesh_file_location, f"{mesh_id}.obj"), 'wb') as f:
                 f.write(mesh_obj)
+            
+        print(f"{len(self.mesh_ids)} meshes have been downloaded to {mesh_file_location}")
                 
     def transform_meshes(self, mesh_file_location):
         obj_list = os.path.join(mesh_file_location, '*.obj')

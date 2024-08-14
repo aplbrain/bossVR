@@ -24,7 +24,6 @@ class ExtractInfo(BaseConfig):
         try:
             # First download base resolution to get all available res and check if input res is available
             vol = CloudVolume(url, fill_missing=True, use_https=True)
-            print(vol.resolution)
 
             avail_res = list(vol.available_mips)
             if self.img_res is not None and self.img_res not in avail_res:
