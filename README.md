@@ -1,7 +1,7 @@
 # BossVR
 ![Logo](bossVR.jfif)
 
-**BossVR** is a Python-based tool that allows you to interact with datasets from [BossDB](https://bossdb.org/projects) and create or modify syGlass projects. This tool is designed to handle various tasks, including retrieving information about datasets, downloading images in TIFF format, downloading and transforming meshes, creating syGlass projects with image stacks, mask layers, and meshes, and uploading and exporting annotations.
+**BossVR** is a Python tool that allows you to interact with datasets from [BossDB](https://bossdb.org/projects) and create or modify syGlass projects. This tool is designed to retrieving information about datasets, downllad images in TIFF format, download and transform meshes, create syGlass projects with image stacks, mask layers, and meshes, and upload and export annotations.
 
 ## Features
 
@@ -29,7 +29,24 @@ This tool supports both `intern` and `CloudVolume` for accessing BossDB data. Fo
 
 ## Configuration
 
-The `config.ini` file is used to configure your project's settings. Here is an example:
+To run the script, modify the parameters in the configuration file in the same directory as the script, config.ini
+
+- `img_uri`:  CloudVolume image data URI. Required.
+- `img_res`: Desired resolution for image data. By default, img_res=0  
+- `seg_uri`:  CloudVolume segmentation data URI.
+- `seg_res`: Desired resolution for segmentation data. By default, seg_res=0
+- `x_dimensions`: Range for X dimension in the format `x_start:x_stop`. If not provided, the entire range is extracted.
+- `y_dimensions`: Range for X dimension in the format `x_start:x_stop`. If not provided, the entire range is extracted.
+- `z_dimensions`: Range for X dimension in the format `x_start:x_stop`. If not provided, the entire range is extracted.
+- `output_path`: Directory where the images, segmentations, meshes, and syGlass project should be saved. If not provided, images will be saved in the default directory
+- `CAVEclient`: Name of the CAVEclient bucket to pull meshes from. Optional.
+- `mesh_ids`: List of mesh IDs to be downloaded and transformed. Required for downloading meshes. Otherwise optional. 
+- `mesh_uri`: CloudVolume URI to pull meshes from. If both  `mesh_uri` and `CAVEclient` are provided, script by default will use `CAVEclient`.
+- `project_name`: Desired name of project. Required. 
+- `syglass_directory`: File path to syGlass installation. Folder containing built-in syGlassCLI.exe. Required for importing and exporting of shader settings. Otherwise optional. 
+- `shader_settings_to_load_path`: File path to JSON file of shader settings to load in created project. 
+
+Example `config.ini` file:
 
 ```ini
 [DEFAULT]
@@ -65,8 +82,8 @@ python main.py
 
 ### Pipeline Module
 - **Annotations**: Manage annotations including extraction, importing, volumetric block operations, and ROI handling.
-  - `extract_tracking_points()`: Extracts tracking points from a syGlass project.
-  - `import_tracking_points(df)`: Imports tracking points from a DataFrame into a syGlass project.
+  - `extract_tracking_points()`: Extracts tracking points from a syGlass project as a 'CAVE annotation table'-like DataFrame. 
+  - `import_tracking_points(df)`: Imports tracking points from a 'CAVE annotation table'-like DataFrame into a syGlass project.
   - `get_all_volumetric_blocks()`: Retrieves all volumetric blocks around tracking points.
   - `get_volumetric_block_around_point(block_num)`: Retrieves a specific volumetric block.
   - `export_tracings()`: Exports tracings to files.
@@ -99,9 +116,9 @@ python main.py
 ### Util Module
 - **common_functions**: Provides utility functions for image processing, file handling, and other tasks.
 
-## Example Workflow
+## Example Workflow and Usage
 
-Note these functions operate with the project specifications as configured in the config.file. It 
+The tool can be run from the command line, having configured project parameters in `config.ini`. 
 
 1. **Extract Dataset Information**:
    Retrieve information such as the dimensions of the dataset at each resolution level 
@@ -125,3 +142,4 @@ Note these functions operate with the project specifications as configured in th
 6. **Manage Shader Settings**:
    - Use `PipelineController.export_shader_settings()` to export shader settings.
    - Use `PipelineController.apply_view_shader_settings()` to apply shader settings.
+  
