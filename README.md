@@ -67,14 +67,6 @@ syglass_directory = C:/Program Files/syGlass/bin
 shader_settings_to_load_path = ./shader_settings/shaderSettings.json
 ```
 
-## Usage
-
-The `main.py` script is the entry point for running the tool. It reads the configuration from `config.ini` and uses it to execute various tasks via the `PipelineController` class.
-
-```sh
-python main.py
-```
-
 ### Available Functions
 
 ### Config Module
@@ -119,17 +111,21 @@ python main.py
 
 ## Example Workflow and Usage
 
-The tool can be run from the command line, having configured project parameters in `config.ini`. 
+The `main.py` script is the entry point for running the tool. It reads the configured project parameters from `config.ini` and uses it to execute various tasks via the `PipelineController` class.
+
+```sh
+python main.py
+```
 
 1. **Extract Dataset Information**:
-   Retrieve information such as the dimensions of the dataset at each resolution level 
-   - Use `PipelineController.extract_img_info()` to retrieve image dataset information
-   - Use `PipelineController.extract_seg_info()` to retrieve segmentation dataset information
+   Retrieve information such as the dimensions of the dataset at each resolution level.
+   - Use `PipelineController.extract_img_info()` to retrieve image dataset information.
+   - Use `PipelineController.extract_seg_info()` to retrieve segmentation dataset information.
 
 3. **Download Images and Meshes**:
-   - Use `PipelineController.download_img()` to download images as a TIFF stack
-   - Use `PipelineController.download_seg()` to download segmentation images as a TIFF stack
-   - Use `PipelineController.run_mesh_download()` to download and transform meshes to the specified image stack
+   - Use `PipelineController.download_img()` to download images as a TIFF stack.
+   - Use `PipelineController.download_seg()` to download segmentation images as a TIFF stack.
+   - Use `PipelineController.run_mesh_download()` to download and transform meshes to the specified image stack.
 
 4. **Create syGlass Project**:
    - Use `PipelineController.create_project_only_img()` to create a project with just the images.
@@ -138,7 +134,13 @@ The tool can be run from the command line, having configured project parameters 
 
 5. **Manage Annotations**:
    - Use `PipelineController.export_tracking_points()` to export annotation points as a dataframe. 
-   - Use `PipelineController.import_tracking_points(df)` to import annotation points from a dataframe. 
+   - Use `PipelineController.import_tracking_points(df)` to import annotation points from a dataframe.
+   - Use `PipelineController.get_all_volumetric_blocks()` to export list of volumetric blocks from counting points in project.
+   - Use `PipelineController.get_volumetric_block_around_point(block_num)` to export TIFF image stack around a particular counting point.
+   - Use `PipelineController.export_tracings()` to export tracings from syGlass project as .SWC files.
+   - Use `PipelineController.import_tracings(trace_file_path)` to import .SWC file tracings from specified directory into syGlass project.
+   - Use `PipelineController.export_roi(roi_index)` to a particular ROI as TIFF.
+   - Use `PipelineController.import_roi(roi_index, roi_mask)` to create an ROI from a mask numpy array.
   
 NOTE: When importing and exporting annotations, the project cannot be actively open in syGlass stimultaneously. 
 
