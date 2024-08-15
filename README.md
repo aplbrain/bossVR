@@ -1,7 +1,7 @@
 # BossVR
 ![Logo](bossVR.jfif)
 
-**BossVR** is a Python tool that allows you to interact with datasets from [BossDB](https://bossdb.org/projects) and create or modify syGlass projects. This tool is designed to retrieving information about datasets, downllad images in TIFF format, download and transform meshes, create syGlass projects with image stacks, mask layers, and meshes, and upload and export annotations.
+**BossVR** is a Python tool that allows you to interact with datasets from [BossDB](https://bossdb.org/projects) and create or modify [syGlass](https://www.syglass.io/) projects. This tool is designed to retrieve information about datasets, download images in TIFF format, download and transform meshes, create syGlass projects with image stacks, mask layers, and meshes, and upload and export annotations.
 
 ## Features
 
@@ -142,11 +142,11 @@ python main.py
    - Use `PipelineController.export_roi(roi_index)` to a particular ROI as TIFF.
    - Use `PipelineController.import_roi(roi_index, roi_mask)` to create an ROI from a mask numpy array.
   
-NOTE: When importing and exporting annotations, the project cannot be actively open in syGlass stimultaneously. 
+**NOTE**: When importing and exporting annotations, the project cannot be actively open in syGlass stimultaneously. 
 
 6. **Manage Shader Settings**:
    - Use `PipelineController.export_shader_settings()` to export shader settings.
    - Use `PipelineController.apply_view_shader_settings()` to apply shader settings.
   
-NOTE: To use apply_view_shader_settings(), the project must already be in the syGlass project directory. The function only renders the project in the specified shader settings, but does not automatically save the project with them. To save the settings to the project, this must be done in syGlass. 
+**NOTE**: To use apply_view_shader_settings(), the project must already be in the syGlass project directory. The function only renders the project in the specified shader settings, but does not automatically save the project with them. To save the settings to the project, this must be done in syGlass. 
   
