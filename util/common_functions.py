@@ -10,11 +10,15 @@ def save_slices_as_tiff(dataset, path, file_location, offset, data_type=""):
     
     first_image = ""
     
-    img_file_location = os.path.join(file_location, data_type, dataset) if data_type=="block" else os.path.join(file_location, data_type)
+    img_file_location = os.path.join(file_location, data_type)
     
     os.makedirs(img_file_location, exist_ok=True)
-    z_dim = dataset.shape[0] if data_type=='block'else dataset.shape[2]
+    z_dim = dataset.shape[0] if data_type=='block' else dataset.shape[2]
+
     z_start = offset
+
+    if data_type == 'block':
+        z_start = int(offset[0])
    
     for i in tqdm(range(z_dim), desc=f"Saving {data_type} slices"):
         slice_image = dataset[i, :, :, 0] if data_type=='block'else dataset[:, :, i][:, :, 0]
@@ -40,9 +44,7 @@ def get_pair_indices(index, dim, vol, indices):
     if indices=='':
         start, stop = bounds
 
-    size = bounds[1] - bounds[0]
-
-    if stop > size or start >= stop:
+    if stop > bounds[1] or start < bounds[0] or start >= stop:
         raise ValueError(f"Invalid {dim} indices: {start}:{stop}. Must be within range ({bounds[0]}:{bounds[1]}) and start < stop")
     else:
         return start, stop

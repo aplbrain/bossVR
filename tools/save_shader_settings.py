@@ -22,7 +22,6 @@ class ShaderSettings(BaseConfig):
         os.makedirs(shader_settings_path, exist_ok=True)
         # Construct absolute path for the JSON file
         proj_shader_settings_path = os.path.abspath(os.path.join(shader_settings_path, f'{self.project_name}_shader_settings.json'))
-        print(proj_shader_settings_path)
         export_shader_args = [
             "-l", self.project_name,  # open syGlass project
             "-e", proj_shader_settings_path  # export shader settings

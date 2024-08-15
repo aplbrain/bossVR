@@ -1,12 +1,12 @@
 # /pipeline/pipeline_controller.py
-from pipeline.extract_info import ExtractInfo
-from pipeline.image_download import ImageDownload
-from pipeline.mesh_download import MeshDownload
-from pipeline.project_creation import ProjectCreation
-from pipeline.save_shader_settings import ShaderSettings
-from pipeline.extract_annotations import Annotations
+from tools.extract_info import ExtractInfo
+from tools.image_download import ImageDownload
+from tools.mesh_download import MeshDownload
+from tools.project_creation import ProjectCreation
+from tools.save_shader_settings import ShaderSettings
+from tools.extract_annotations import Annotations
 
-class PipelineController:
+class BossVRController:
     def __init__(self, config):
         self.config = config
         self.extract_info = ExtractInfo(config)
@@ -65,20 +65,20 @@ class PipelineController:
         self.save_shader_settings.open_project()
     
     def export_tracking_points(self):
-        self.extract_annotations.extract_tracking_points()
+        return self.extract_annotations.extract_tracking_points()
 
     def import_tracking_points(self, df):
         # df is annotation table with points
-        self.extract_annotations.import_tracking_points(df)
+        return self.extract_annotations.import_tracking_points(df)
     
     def get_all_volumetric_blocks(self):
-        self.extract_annotations.get_all_volumetric_blocks()
+        return self.extract_annotations.get_all_volumetric_blocks()
     
     def get_volumetric_block_around_point(self, block_num):
         self.extract_annotations.get_volumetric_block_around_point(block_num)
     
     def export_tracings(self):
-        self.extract_annotations.export_tracings
+        self.extract_annotations.export_tracings()
     
     def import_tracings(self, trace_file_path):
         self.extract_annotations.import_tracings(trace_file_path)
@@ -86,5 +86,5 @@ class PipelineController:
     def export_roi(self, roi_index):
         self.extract_annotations.export_roi(roi_index)
     
-    def export_roi(self, roi_index, roi_mask):
+    def import_roi(self, roi_index, roi_mask):
         self.extract_annotations.import_roi(roi_index, roi_mask)

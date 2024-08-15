@@ -33,7 +33,6 @@ class Annotations(BaseConfig):
         rows = []
         columns = ['id', 'created', 'superceded_id', 'valid', 'classification_system',
                 'cell_type', 'pt_supervoxel_id', 'pt_root_id', 'pt_position', 'og_pt_position']
-        df = pd.DataFrame(columns=columns)
         unique_id = 1
         for color, vertices in counts.items():
             for vertex in vertices:
@@ -53,8 +52,7 @@ class Annotations(BaseConfig):
                 rows.append(new_row)
                 unique_id += 1
 
-        df = pd.DataFrame(rows, columns=['id', 'created', 'superceded_id', 'valid', 'classification_system',
-                                        'cell_type', 'pt_supervoxel_id', 'pt_root_id', 'pt_position', 'og_pt_position'])        
+        df = pd.DataFrame(rows, columns=columns)    
         return df
        
     def import_tracking_points(self, df_points):
@@ -84,7 +82,7 @@ class Annotations(BaseConfig):
         project.set_counting_points(counts)
 
         # Call extract_tracking_points to return the df with the new tracking points added
-        self.extract_tracking_points()
+        return self.extract_tracking_points()
 
     def get_all_volumetric_blocks(self, side_length=100):
         # side length is in voxels
@@ -117,10 +115,18 @@ class Annotations(BaseConfig):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(project_file_location)
 
+        # Ensure real_point is a NumPy array
         df_points = self.extract_tracking_points()
         real_point = df_points.loc[df_points['id'] == block_num, 'og_pt_position']
+
+        # Convert real_point and side_length to numpy arrays if they aren't already
+        real_point = np.array(real_point)
+        side_length = np.array(side_length)
+
+        offset = [np.maximum(0, int(real_point[0][0]) - side_length/2), np.maximum(0, int(real_point[0][1]) - side_length/2), np.maximum(0, int(real_point[0][2]) - side_length/2)]
+        
         resolution = len(project.get_resolution_map()) - 1
-        offset = np.maximum(real_point.astype(int) - side_length / 2, np.zeros(3))
+
         dimensions = np.full(3, side_length)
         block = project.get_custom_block(0, resolution, offset, dimensions)
 
@@ -131,18 +137,16 @@ class Annotations(BaseConfig):
         transformed_offset = transform_annotation_points(offset, img_resolution, x, y, z)
 
         # convert to tiff stack
-        save_slices_as_tiff(block.data, self.img_uri.replace("/", "_"), self.output_path, transformed_offset, "block", block_num)
+        save_slices_as_tiff(block.data, self.img_uri.replace("/", "_"), self.output_path, transformed_offset, "block")
 
         return block
 
     def export_tracings(self):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(project_file_location)
-        trace_path = os.path.join(self.output_path, "tracings")
-        os.makedirs(trace_path, exist_ok=True)
 
         # save the tracings (will export each disconnected component as a separate SWC file)
-        project.save_tracings(directory=trace_path)
+        project.save_tracings(directory=os.path.join(self.output_path))
     
     def import_tracings(self, trace_file_path):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
