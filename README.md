@@ -78,7 +78,8 @@ shader_settings_to_load_path = ./shader_settings/shaderSettings.json
   - `cloud_info(data_type='image')`: Retrieves and displays the available resolutions and dimensions for image or segmentation data.
 
 - **ImageDownload**: Downloads images from BossDB and saves them in TIFF format.
-  - `cloud_convert(data_type='image')`: Downloads cutout data from BossDB and saves it as TIFF files. Can operate on both image and segmentation stacks. 
+  - `cloud_convert(data_type='image')`: Downloads cutout data from BossDB and saves it as TIFF files. Can operate on both image and segmentation stacks.
+  - The dimensions for image download are specified in the configuration file, but are automatically calculated for the segmentation (ex. if both are not in the same resolution). 
  
 - **Annotations**: Manage annotations including extraction, importing, volumetric block operations, and ROI handling.
   - `extract_tracking_points()`: Extracts tracking points from a syGlass project as a 'CAVE annotation table'-like DataFrame. 
