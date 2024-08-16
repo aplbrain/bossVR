@@ -1,4 +1,4 @@
-# /pipeline/pipeline_controller.py
+# /tools/bossvr_controller.py
 from tools.extract_info import ExtractInfo
 from tools.image_download import ImageDownload
 from tools.mesh_download import MeshDownload
