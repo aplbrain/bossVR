@@ -48,7 +48,13 @@ class ProjectCreation(BaseConfig):
         project_file_location = os.path.join(proj_file_location, self.project_name)
         proj_file_path = os.path.join(proj_file_location, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(proj_file_path)
-        project.set_voxel_dimensions(np.array([30, 1, 1], dtype=float))
+
+        img_vol = CloudVolume(self.img_uri, mip=self.img_res, fill_missing=True, progress=False, use_https=True)
+        img_res = np.array(img_vol.resolution)
+        # reverse it to [Z, Y, X] to match syGlass
+        img_res = img_res[::-1] 
+        
+        project.set_voxel_dimensions(img_res, dtype=float))
         
         return project_file_location
     
