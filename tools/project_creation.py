@@ -46,19 +46,11 @@ class ProjectCreation(BaseConfig):
                 pbar.update(cd.GetPercentage() - pbar.n)
 
         project_file_location = os.path.join(proj_file_location, self.project_name)
-        print(project_file_location)
-
-        # proj_file_path = os.path.join(proj_file_location, self.project_name, f'{self.project_name}.syg')
-        # print(proj_file_path)
-        # project = sy.get_project(proj_file_path)
-        # # project.set_voxel_dimensions(np.array([30, 1, 1], dtype=float))
+        proj_file_path = os.path.join(proj_file_location, self.project_name, f'{self.project_name}.syg')
+        project = sy.get_project(proj_file_path)
+        project.set_voxel_dimensions(np.array([30, 1, 1], dtype=float))
         
         return project_file_location
-
-    def set_voxel_resolution(self, proj_file_location, img_res=[30, 1, 1]):
-        proj_file_path = os.path.join(proj_file_location, f'{self.project_name}.syg')
-        project = sy.get_project(proj_file_path)
-        project.set_voxel_dimensions(np.array(img_res, dtype=float))
     
     def add_mask_layer(self, proj_file_location, first_seg_image):
         # Create DirectoryDescriptor to search folder for TIFFs, find first image of set, and create file list
@@ -86,13 +78,9 @@ class ProjectCreation(BaseConfig):
         return proj_file_location
         
     def add_mesh_objs(self, proj_file_location, mesh_file_location):
-        print(proj_file_location)
         print("Adding mesh objects to syGlass project...")
         proj_file_path = os.path.join(proj_file_location, f'{self.project_name}.syg')
-        print(proj_file_path)
         project = sy.get_project(proj_file_path)
-        self.set_voxel_resolution(proj_file_location)
-
         obj_list = os.path.join(mesh_file_location, '*.obj')
         meshes = glob.glob(obj_list)
         project.import_meshes(meshes, "default")
