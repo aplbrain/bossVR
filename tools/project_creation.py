@@ -13,11 +13,12 @@ class ProjectCreation(BaseConfig):
         super().__init__(
             config.x_dimensions, config.y_dimensions, 
             config.z_dimensions, config.output_path, config.img_uri, config.img_res, 
-            config.img_link, config.seg, config.seg_uri, config.seg_res, config.seg_link,
+            config.img_link, config.seg_uri, config.seg_res, config.seg_link,
             config.CAVEclient, config.mesh_ids, config.mesh_uri,
-            config.project_name, config.syglass_directory, config.shader_settings_to_load_path
+            config.project_name, config.syglass_directory, 
+            config.shader_settings_to_load_path, config.annotation_csv_file_path, config.trace_file_path
         )
-
+    
     def create_base_project(self, first_img_image):
         # create project in specified path
         proj_file_location = r'{}'.format(self.output_path)

@@ -16,9 +16,10 @@ class Annotations(BaseConfig):
         super().__init__(
             config.x_dimensions, config.y_dimensions, 
             config.z_dimensions, config.output_path, config.img_uri, config.img_res, 
-            config.img_link, config.seg, config.seg_uri, config.seg_res, config.seg_link,
+            config.img_link, config.seg_uri, config.seg_res, config.seg_link,
             config.CAVEclient, config.mesh_ids, config.mesh_uri,
-            config.project_name, config.syglass_directory, config.shader_settings_to_load_path
+            config.project_name, config.syglass_directory, 
+            config.shader_settings_to_load_path, config.annotation_csv_file_path, config.trace_file_path
         )
         
     def extract_tracking_points(self):
@@ -54,8 +55,10 @@ class Annotations(BaseConfig):
 
         df = pd.DataFrame(rows, columns=columns)    
         return df
-       
-    def import_tracking_points(self, df_points):
+
+    def import_tracking_points(self):
+        df_points = pd.read_csv(self.annotation_csv_file_path)
+        
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(project_file_location)
         counts = project.get_counting_points()
@@ -81,8 +84,8 @@ class Annotations(BaseConfig):
         
         project.set_counting_points(counts)
 
-        # Call extract_tracking_points to return the df with the new tracking points added
         return self.extract_tracking_points()
+
 
     def get_all_volumetric_blocks(self, side_length=100):
         # side length is in voxels
@@ -130,13 +133,13 @@ class Annotations(BaseConfig):
         dimensions = np.full(3, side_length)
         block = project.get_custom_block(0, resolution, offset, dimensions)
 
-        # transform the offset
+        # Transform the offset
         img_vol = CloudVolume(f"s3://bossdb-open-data/{self.img_uri}", mip=self.img_res, fill_missing=True, use_https=True)
         img_resolution = img_vol.resolution
         x, _, y, _, z, _ = get_indices(img_vol, self.x_dimensions, self.y_dimensions, self.z_dimensions)
         transformed_offset = transform_annotation_points(offset, img_resolution, x, y, z)
 
-        # convert to tiff stack
+        # Convert to tiff stack
         save_slices_as_tiff(block.data, self.img_uri.replace("/", "_"), self.output_path, transformed_offset, "block")
 
         return block
@@ -145,32 +148,32 @@ class Annotations(BaseConfig):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(project_file_location)
 
-        # save the tracings (will export each disconnected component as a separate SWC file)
+        # Save the tracings (will export each disconnected component as a separate SWC file)
         project.save_tracings(directory=os.path.join(self.output_path))
     
-    def import_tracings(self, trace_file_path):
+    def import_tracings(self):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(project_file_location)
 
-        trace_file_path = os.path.join(trace_file_path, '*.swc')
-        trace_list = glob.glob(trace_file_path)
+        self.trace_file_path = os.path.join(self.trace_file_path, '*.swc')
+        trace_list = glob.glob(self.trace_file_path)
         project.import_swcs(trace_list, "default")
 
     def export_roi(self, roi_index):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(project_file_location)
     
-        # get the raw ROI data block
+        # Get the raw ROI data block
         roi_block = project.get_roi_data(roi_index)
 
-        # save the ROI data as a tiff file
+        # Save the ROI data as a tiff file
         roi_img_block_file_path = os.path.join(self.output_path, self.project_name, f"{self.project_name}_roi_img_block_tiffs")
         tifffile.imsave(roi_img_block_file_path, roi_block.data)
 
-        # get the mask block of the ROI
+        # Get the mask block of the ROI
         mask_block = project.get_mask(roi_index)
 
-        # save the ROI data as a tiff file
+        # Save the ROI data as a tiff file
         roi_mask_block_file_path = os.path.join(self.output_path, self.project_name, f"{self.project_name}_roi_mask_block_tiffs")
         os.makedirs(roi_mask_block_file_path, exist_ok=True)
         tifffile.imsave(roi_mask_block_file_path, mask_block.data)
@@ -179,5 +182,5 @@ class Annotations(BaseConfig):
         project_file_location = os.path.join(self.output_path, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(project_file_location)
 
-        # import an ROI mask numpy array (z,y,x,channel count)
+        # Import an ROI mask numpy array (z,y,x,channel count)
         project.import_mask(roi_mask, roi_index)

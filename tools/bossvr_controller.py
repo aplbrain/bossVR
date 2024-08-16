@@ -67,9 +67,9 @@ class BossVRController:
     def export_tracking_points(self):
         return self.extract_annotations.extract_tracking_points()
 
-    def import_tracking_points(self, df):
+    def import_tracking_points(self):
         # df is annotation table with points
-        return self.extract_annotations.import_tracking_points(df)
+        return self.extract_annotations.import_tracking_points()
     
     def get_all_volumetric_blocks(self):
         return self.extract_annotations.get_all_volumetric_blocks()
@@ -80,8 +80,8 @@ class BossVRController:
     def export_tracings(self):
         self.extract_annotations.export_tracings()
     
-    def import_tracings(self, trace_file_path):
-        self.extract_annotations.import_tracings(trace_file_path)
+    def import_tracings(self):
+        self.extract_annotations.import_tracings()
     
     def export_roi(self, roi_index):
         self.extract_annotations.export_roi(roi_index)
