@@ -19,10 +19,10 @@ Install the required packages using the `requirements.txt` file:
 pip install -r requirements.txt
 ```
 
-Alternatively, set up a new environment with the `cloud_intern.yaml` file:
+Alternatively, set up a new environment with the `bossVR.yaml` file:
 
 ```sh
-conda env create -f cloud_intern.yaml
+conda env create -f bossVR.yaml
 ```
 
 This tool supports both `intern` and `CloudVolume` for accessing BossDB data. Follow the installation instructions for [intern](https://github.com/jhuapl-boss/intern) and [CloudVolume](https://github.com/seung-lab/cloud-volume?tab=readme-ov-file) for detailed guidance.
@@ -134,8 +134,8 @@ The `main.py` script can be executed from the command line to perform the comman
    python main.py open_project
    ```
 
-**NOTE**: The project creation tools with pyGlass require a Windows operating system
-
-**NOTE**: When importing and exporting annotations, the project cannot be actively open in syGlass simultaneously.
-
-**NOTE**: To use `apply_view_shader_settings()`, the project must already be in the syGlass project directory. The function only renders the project in the specified shader settings, but does not automatically save the project with them. To save the settings to the project, this must be done in syGlass.
+**Notes/Future Improvements**: 
+1. The project creation steps may raise errors if syGlass believes a project is still open, or for other  reasons. In such cases, download the images, segmentations, meshes as individual steps, and manually upload to syGlass, specifying the voxel resolution.
+2. The project creation tools with pyGlass require a Windows operating system.
+3. When importing and exporting annotations, the project cannot be actively open in syGlass simultaneously.
+4. To use `apply_view_shader_settings()`, the project must already be in the syGlass project directory. The function only renders the project in the specified shader settings, but does not automatically save the project with them. To save the settings to the project, this must be done in syGlass.
