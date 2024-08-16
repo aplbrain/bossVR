@@ -2,11 +2,8 @@ from config.base_config import BaseConfig
 from utils.common_functions import get_indices
 from utils.common_functions import check_res_cloud
 import os
-from PIL import Image
 import requests
-from tqdm import tqdm
 from cloudvolume import CloudVolume
-import numpy as np
 from utils.common_functions import save_slices_as_tiff
 
 class ImageDownload(BaseConfig):
