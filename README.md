@@ -27,6 +27,49 @@ conda env create -f bossVR.yaml
 
 This tool supports both `intern` and `CloudVolume` for accessing BossDB data. Follow the installation instructions for [intern](https://github.com/jhuapl-boss/intern) and [CloudVolume](https://github.com/seung-lab/cloud-volume?tab=readme-ov-file) for detailed guidance.
 
+## Available Functions
+
+### Config Module
+- **BaseConfig**: Handles the configuration settings for the tool, including dataset dimensions, paths, and project details.
+
+### Pipeline Module
+
+- **ExtractInfo**: Retrieves detailed information about datasets from BossDB.
+  - `cloud_info(data_type='image')`: Retrieves and displays the available resolutions and dimensions for image or segmentation data.
+
+- **ImageDownload**: Downloads images from BossDB and saves them in TIFF format.
+  - `cloud_convert(data_type='image')`: Downloads cutout data from BossDB and saves it as TIFF files. Can operate on both image and segmentation stacks.
+  - The dimensions for image download are specified in the configuration file, but are automatically calculated for the segmentation (ex. if both are not in the same resolution). 
+ 
+- **Annotations**: Manage annotations including extraction, importing, volumetric block operations, and ROI handling.
+  - `extract_tracking_points()`: Extracts tracking points from a syGlass project as a 'CAVE annotation table'-like DataFrame. 
+  - `import_tracking_points(df)`: Imports tracking points from a 'CAVE annotation table'-like DataFrame into a syGlass project.
+  - `get_all_volumetric_blocks()`: Retrieves all volumetric blocks around tracking points. Returns a list of syGlass `blocks`. 
+  - `get_volumetric_block_around_point(block_num)`: Retrieves a specific volumetric block centered around a particular tracking point, and converts it into a TIFF stack. `block_num` denotes the index of the block, as numbered in the counting point annotation table.
+  - `export_tracings()`: Exports tracings to SWC files in the directory. 
+  - `import_tracings(trace_file_path)`: Imports tracings from SWC files.
+  - `export_roi(roi_index)`: Exports ROI data as TIFF. Indexed by ROI index. 
+  - `import_roi(roi_index, roi_mask)`: Imports ROI data as a mask numpy array. 
+
+- **MeshDownload**: Downloads and transforms meshes from BossDB.
+  - `download_meshes_cave(mesh_file_location)`: Downloads meshes using the CAVEclient.
+  - `download_meshes_cv(mesh_file_location)`: Downloads meshes using CloudVolume.
+  - `transform_meshes(mesh_file_location)`: Transforms mesh coordinates based on the dataset's resolution and dimensions, to co-register with the image stacks in the syGlass project.
+  - `run_mesh_download()`: Executes the mesh download and transformation process.
+
+- **ProjectCreation**: Handles the creation and modification of syGlass projects.
+  - `create_base_project(first_img_image)`: Creates a new syGlass project with the downloaded image stack.
+  - `add_mask_layer(proj_file_location, first_seg_image)`: Adds a mask layer to the existing syGlass project.
+  - `add_mesh_objs(proj_file_location, mesh_file_location)`: Adds mesh objects to the existing syGlass project.
+
+- **ShaderSettings**: Manages shader settings for syGlass projects.
+  - `export_shader_settings()`: Exports shader settings from a syGlass project as a JSON file. Saves the file in ./output_file_path/shader_settings/project_name_shader_settings.json
+  - `apply_view_shader_settings()`: Opens the syGlass project with the specific shader settings JSON specified in config.ini
+  - `open_project()`: Opens a syGlass project.
+
+### Util Module
+- **common_functions**: Provides utility functions for image processing, file handling, and other tasks.
+
 ## Configuration
 
 To run the script, modify the parameters in the configuration file named `config.ini`, located in the same directory as the script:
@@ -77,12 +120,12 @@ The `main.py` script can be executed from the command line to perform the comman
 - **extract_seg_info**: Retrieves segmentation dataset information.
 - **download_img**: Downloads images as a TIFF stack.
 - **download_seg**: Downloads segmentation images as a TIFF stack.
-- **run_mesh_download**: Downloads and transforms meshes.
+- **run_mesh_download**: Downloads and transforms meshes, co-registered to the image and segmentation stacks
 - **create_project_only_img**: Creates a project with just the images.
 - **create_project_img_mesh**: Creates a project with images and meshes.
 - **create_project_img_seg_mesh**: Creates a project with images, segmentation masks, and meshes.
-- **export_shader_settings**: Exports shader settings.
-- **apply_view_shader_settings**: Applies shader settings.
+- **export_shader_settings**: Exports shader settings as a JSON.
+- **apply_view_shader_settings**: Opens project in specified shader settings.
 - **open_project**: Opens a syGlass project.
 - **export_tracking_points**: Exports annotation points as a dataframe.
 - **import_tracking_points**: Imports annotation points from a dataframe.
