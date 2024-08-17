@@ -1,5 +1,5 @@
 # BossVR
-![Logo](bossVR.jfif)
+https://github.com/user-attachments/assets/359d64c9-5494-4d80-8e8d-05bc388210b9
 
 **BossVR** is a Python tool that allows you to interact with datasets from [BossDB](https://bossdb.org/projects) and create or modify [syGlass](https://www.syglass.io/) projects. This tool is designed to retrieve information about datasets, download images in TIFF format, download and transform meshes, create syGlass projects with image stacks, mask layers, and meshes, and upload and export annotations.
 
