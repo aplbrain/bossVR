@@ -73,24 +73,6 @@ def check_res_cloud(img_uri, img_res, seg_uri, seg_res):
             new_mip = seg_vol.resolution[0] / img_vol.resolution[0]
         raise ValueError(f'WARNING: Image and segmentation data is not at the same resolution. Please downsample {larger} data with resolution mip={int(new_mip - 1)}')
 
-def flip_images_in_directory(img_stack_dir):
-    # Iterate over all files in the input directory
-    for filename in os.listdir(img_stack_dir):
-        if filename.endswith('.tiff') or filename.endswith('.tif'):
-            # Construct full file path
-            file_path = os.path.join(img_stack_dir, filename)
-            # Open an image file
-            with Image.open(file_path) as img:
-                # Rotate 90 degrees
-                rotate_img = img.transpose(Image.ROTATE_270)
-                # Flip the image on the Y axis
-                flipped_img = rotate_img.transpose(Image.FLIP_LEFT_RIGHT)
-                # Save the transformed image to the same directory; replace image
-                temp_path = os.path.join(img_stack_dir, "temp_" + filename)
-                flipped_img.save(temp_path)
-                # Rename the temporary file to the original file name
-                os.replace(temp_path, file_path)
-
 def transform_annotation_points(vertex, img_resolution, x, y, z):
     transformed_vertex = [vertex[0] + x * img_resolution[0], vertex[1] + y * img_resolution[1], vertex[2] + z * img_resolution[2]]
     return transformed_vertex
