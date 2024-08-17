@@ -68,7 +68,26 @@ This tool supports both `intern` and `CloudVolume` for accessing BossDB data. Fo
   - `open_project()`: Opens a syGlass project.
 
 ### Util Module
-- **common_functions**: Provides utility functions for image processing, file handling, and other tasks.
+
+**common_functions**: Provides utility functions for image processing, file handling, and other tasks.
+
+- `save_slices_as_tiff(dataset, path, file_location, offset, data_type='')`: 
+  Saves image slices from a 3D dataset as TIFF files. The function supports both block-based and standard image stacks and handles image rotation and flipping.
+
+- `get_pair_indices(index, dim, vol, indices)`: 
+  Parses and validates index ranges for a given dimension of a 3D volume, ensuring the range is within the volume bounds.
+
+- `get_indices(vol, x_indices, y_indices, z_indices)`: 
+  Retrieves and validates the start and stop indices for the X, Y, and Z dimensions of a 3D volume.
+
+- `parse_url(url)`: 
+  Parses a URL to ensure it contains the correct format for accessing a dataset from BossDB with CloudVolume.
+
+- `check_res_cloud(img_uri, img_res, seg_uri, seg_res)`: 
+  Checks if the resolution of image and segmentation data match. If they don't, it raises a warning and suggests downsampling the larger dataset.
+
+- `transform_annotation_points(vertex, img_resolution, x, y, z)`: 
+  Transforms annotation points from the syGlass real-world coordinate system to the dataset coordinate system of voxels.
 
 ## Configuration
 
