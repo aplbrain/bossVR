@@ -1,4 +1,4 @@
-name: cloudintern
+name: bossVR
 channels:
   - conda-forge
   - defaults
