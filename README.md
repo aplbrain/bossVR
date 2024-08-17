@@ -72,7 +72,7 @@ This tool supports both `intern` and `CloudVolume` for accessing BossDB data. Fo
 **common_functions**: Provides utility functions for image processing, file handling, and other tasks.
 
 - `save_slices_as_tiff(dataset, path, file_location, offset, data_type='')`: 
-  Saves image slices from a 3D dataset as TIFF files. The function supports both block-based and standard image stacks and handles image rotation and flipping.
+  Saves image slices from a 3D dataset as TIFF files. The function supports both block-based and standard image stacks and handles image rotation and flipping to transform image orientation consistent with how images are loaded in syGlass
 
 - `get_pair_indices(index, dim, vol, indices)`: 
   Parses and validates index ranges for a given dimension of a 3D volume, ensuring the range is within the volume bounds.
