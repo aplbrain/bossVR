@@ -201,3 +201,5 @@ The `main.py` script can be executed from the command line to perform the comman
 2. The project creation tools with pyGlass require a Windows operating system.
 3. When importing and exporting annotations, the project cannot be actively open in syGlass simultaneously.
 4. To use `apply_view_shader_settings()`, the project must already be in the syGlass project directory. The function only renders the project in the specified shader settings, but does not automatically save the project with them. To save the settings to the project, this must be done in syGlass.
+5. Further testing needed for export ROI as TIFF stack function
+6. Export tracings as .SWC functionality occassionally crashes if syGlass thinks a project is open
