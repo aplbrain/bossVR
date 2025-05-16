@@ -54,7 +54,7 @@ class ProjectCreation(BaseConfig):
         # reverse it to [Z, Y, X] to match syGlass
         img_res = img_res[::-1] 
         
-        project.set_voxel_dimensions(img_res, dtype=float)
+        project.set_voxel_dimensions(img_res)
     
     def create_base_project(self, first_img_image):
         proj_file_location = r'{}'.format(self.output_path)
