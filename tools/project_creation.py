@@ -1,3 +1,4 @@
+from cloudvolume import CloudVolume
 from config.base_config import BaseConfig
 from syglass import pyglass
 import time
@@ -17,10 +18,9 @@ class ProjectCreation(BaseConfig):
             config.project_name, config.syglass_directory, 
             config.shader_settings_to_load_path, config.annotation_csv_file_path, config.trace_file_path
         )
-    
-    def create_base_project(self, first_img_image):
+
+    def create_project_from_first_image(self, first_img_image, proj_file_location):
         # create project in specified path
-        proj_file_location = r'{}'.format(self.output_path)
         project = pyglass.CreateProject(pyglass.path(proj_file_location), self.project_name)
 
         # import image data into project    
@@ -45,17 +45,22 @@ class ProjectCreation(BaseConfig):
                 time.sleep(0.1)
                 pbar.update(cd.GetPercentage() - pbar.n)
 
-        project_file_location = os.path.join(proj_file_location, self.project_name)
+    def set_voxel_dimensions(self, proj_file_location):
         proj_file_path = os.path.join(proj_file_location, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(proj_file_path)
 
-        img_vol = CloudVolume(self.img_uri, mip=self.img_res, fill_missing=True, progress=False, use_https=True)
+        img_vol = CloudVolume(f"s3://bossdb-open-data/{self.img_uri}", mip=self.img_res, fill_missing=True, progress=False, use_https=True)
         img_res = np.array(img_vol.resolution)
         # reverse it to [Z, Y, X] to match syGlass
         img_res = img_res[::-1] 
         
-        project.set_voxel_dimensions(img_res, dtype=float))
-        
+        project.set_voxel_dimensions(img_res)
+    
+    def create_base_project(self, first_img_image):
+        proj_file_location = r'{}'.format(self.output_path)
+        self.create_project_from_first_image(first_img_image, proj_file_location)
+        self.set_voxel_dimensions(proj_file_location)
+        project_file_location = os.path.join(proj_file_location, self.project_name)
         return project_file_location
     
     def add_mask_layer(self, proj_file_location, first_seg_image):
