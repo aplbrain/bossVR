@@ -1,3 +1,4 @@
+from cloudvolume import CloudVolume
 from config.base_config import BaseConfig
 from syglass import pyglass
 import time
@@ -48,7 +49,7 @@ class ProjectCreation(BaseConfig):
         proj_file_path = os.path.join(proj_file_location, self.project_name, f'{self.project_name}.syg')
         project = sy.get_project(proj_file_path)
 
-        img_vol = CloudVolume(self.img_uri, mip=self.img_res, fill_missing=True, progress=False, use_https=True)
+        img_vol = CloudVolume(f"s3://bossdb-open-data/{self.img_uri}", mip=self.img_res, fill_missing=True, progress=False, use_https=True)
         img_res = np.array(img_vol.resolution)
         # reverse it to [Z, Y, X] to match syGlass
         img_res = img_res[::-1] 
