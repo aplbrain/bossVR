@@ -1,0 +1,14 @@
+# image and mesh files
+*.tiff
+*.obj
+
+# syglass project files
+*.syg
+*.sym
+*.syk
+*.bak
+*.mib
+log.txt
+
+# compiled python files
+*.pyc
