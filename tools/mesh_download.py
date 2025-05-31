@@ -36,7 +36,14 @@ class MeshDownload(BaseConfig):
         print(f"{len(self.mesh_ids)} meshes have been downloaded to {mesh_file_location}")
 
     def download_meshes_cv(self, mesh_file_location):
-        mesh_vol = CloudVolume(f"s3://bossdb-open-data/{self.mesh_uri}", fill_missing=True, use_https=True)
+        try:
+            mesh_vol = CloudVolume(f"s3://bossdb-open-data/{self.mesh_uri}", fill_missing=True, use_https=True)
+        except KeyError:
+            # If this is caught, most likely means meshes are neuroglancer legacy formatted
+            mesh_vol_uri = os.path.dirname(self.mesh_uri)
+            mesh_vol_name = os.path.basename(self.mesh_uri)
+            mesh_vol = CloudVolume(f"s3://bossdb-open-data/{mesh_vol_uri}", fill_missing=True, use_https=True)
+            mesh_vol.info["mesh"] = mesh_vol_name
 
         # specify where to save mesh objs
         os.makedirs(mesh_file_location, exist_ok=True)
